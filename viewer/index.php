@@ -78,7 +78,6 @@ if (isset($_GET['load'])) {
         <li><a href="../index.php" title="Back to auto-scoring page">Back to Auto-Scoring</a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="#" class="connection-status" id="connection-status">Connection Status</a></li>
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span id="session-active">User</span> <span class="caret"></span></a>
           <ul class="dropdown-menu">
@@ -107,7 +106,9 @@ if (isset($_GET['load'])) {
                     </div>
                   </div>
              </div>
-             <div id="left-up" style="position: relative; height: 500px; overflow: hidden;"></div>
+             <div id="left-up" style="position: relative; height: 550px; overflow: hidden;">
+    <center style="border-top: 1px solid grey;">(drag&drop entries)</center>
+             </div>
              <div id="left-down"></div>
           </div>
           <div id="right" class="col-md-10" style="overflow: hidden; position: absolute; left: 270px; top: 67px; bottom: 5px; right: -5px; overflow: scroll; z-index: 0; background: #313638; border: 1px solid gray;">
