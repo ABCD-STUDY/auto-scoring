@@ -133,7 +133,10 @@ if (isset($_GET['load'])) {
 		 <input type="text" id="new-name"></input>
 	       </div>
 	     </form>
+<<<<<<< HEAD
              <p>After you save a new reicpe reload the auto-scoring page to see the changes</p>                                                                                                            
+=======
+>>>>>>> 73c62f501ccc840086d8082ccd6880403627f269
            </div>
            <div class="modal-footer">
              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
