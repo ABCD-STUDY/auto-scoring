@@ -378,7 +378,6 @@ function fillItems() {
     });
 
     jQuery('#right_svg').on('mouseup', '.deleteitem', function(e) {
-	console.log("press mouse down");
 	// find out all connections to this node
 	var gid = jQuery(this).parent().parent().attr('gid');
 	var cons = connectionsFor( gid );
