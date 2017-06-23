@@ -6,11 +6,13 @@ This project comes in two parts - a viewer for viewing and editing algorithms an
 
 ### Viewer
 
-The viewer is used to create a data flow graph using visual programming. Generally data flows from left to right through "connections" between "nodes". Each node has a list of incoming ports and outgoing ports (and a list of internal state variables). As an example the node calculating the mean of its inputs has 10 input ports that may or may not be connected to something. The three output ports represent the mean of the connected inputs, the number of missing connected values and the total number of connected values respectively.
+The viewer is used to create a data flow graph using visual programming. Its design has been influenced by other existing data flow graphs such as the one from ThreeNodes.js and Amira.
+
+Generally data flows from left to right through "connections" between "nodes". Each node has a list of incoming ports and outgoing ports (and a list of internal state variables). As an example the compute node calculating the mean of its inputs has 10 input ports that may or may not be connected to something. The three output ports represent the mean of the connected inputs, the number of missing (empty string) connected values and the total number of connected values respectively.
 
 ![The viewer used to edit recipes](https://github.com/ABCD-STUDY/auto-scoring/raw/master/images/viewer.png)
 
-Drag- and drop a node from the list on the left to the canvas to instantiate a node. Drag- and drop using the gray port circles on each node to create a connection. Select a node to get a list of the internal state variables on the left.
+Drag- and drop a node from the list on the left to the canvas to instantiate the node. Drag- and drop using the gray port circles on each node to create a connection. Select a node to get a list of the internal state variables on the left.
 
 The interface of each node is defined in the items.json file. Here an example of one nodes specification:
 ```
@@ -34,7 +36,7 @@ The interface of each node is defined in the items.json file. Here an example of
     ]
 }
 ```
-The structure contains three lists: inputs, outputs and state that define the interface of the node. Inputs and outputs are translated into ports that have a name and a connection circle. The state list is displayed on the left hand side of the interface if a node is selected (mouse click without mouse move). Usually state variables are used to provide default values for an input or output port. In the case of the redcap_get.js node the state variable identify the names of REDCap variables that should be used for processing. In the case of the If-Else.js node the state variables can be set to provide default values for the 'a' or 'b' input ports. State variables in the If-Else node are overwritten by data arriving at the node over connections from other nodes. 
+The structure contains three lists: inputs, outputs and state that define the interface of the node. Inputs and outputs are translated into ports that have a name and a connection circle. The state list is displayed on the left hand side of the interface if a node is selected (mouse click without mouse move). Usually state variables are used to provide default values for an input or output port. In the case of the redcap_get.js node the state variable identify the names of REDCap variables that should be used for processing. In the case of the If-Else.js node the state variables can be set to provide default values for the 'a' or 'b' input ports. State variables in the If-Else node are overwritten by data arriving at the node over connections from other nodes.
 
 Nodes have two special visual elements at the top. The orange circle on the left is an enabler connection. Anything connecting to this special port will disable the node if its evaluated to 'false' or '0'. The orange cross on the top right of each node can be used to remove a node.
 
@@ -52,4 +54,44 @@ If node represents input our outputs to the graph it defines a epoch() function.
 
 Epoch information is also used by the output node redcap_put.js. This node caches the calculated values from the end of the epoch to prevent particially calculated values during the non-deterministic execution of the graph.
 
-			
+Nodes that do not represent inputs our outputs to the recipe are simplier. They only observe their input and output dictionaries, possibly utilizing the state variables. Here an example of the implementation of the If-Else node:
+```
+  var IfElse = function () { }; // constructor
+
+  // compute				  
+  IfElse.prototype.work = function (inputs, outputs, state) {
+      var a = null; // a value
+      var b = null; // a value
+      var condition = null; // a comparison function
+
+      if (typeof state[0]['value'] !== 'undefined')
+  	   a = state[0]['value'];
+      if (typeof state[1]['value'] !== 'undefined')
+  	   b = state[1]['value'];
+
+      // if we have a connection (input) instead use that one - not the internal state
+      if (typeof inputs['condition'] !== 'undefined')
+  	   condition = inputs['condition'];
+      if (typeof inputs['b'] !== 'undefined')
+  	   b = inputs['b'];
+      if (typeof inputs['a'] !== 'undefined')
+  	   a = inputs['a'];
+      
+      if (a === null || b === null || condition === null)
+  	   return;
+      
+      var res = condition(a, b); // call the function 'condition'
+      if (res) {
+  	   outputs['true'] = 1;
+  	   outputs['false'] = 0;
+  	   return;
+      }
+      outputs['true'] = 0;
+      outputs['false'] = 1;
+  };
+  
+  module.exports = IfElse;
+```
+At the first epoch the constructor will be called that can be used to specify a hidden state or memory of the node. At at each iteration during an epoch the work function is called by the runner providing the current input and state values given the other connected nodes and their states. The computation in the work function of the node is expected to produce the outputs values as specified in the 'name' field of the node definition.
+
+A benefit of using a language where function are first class citizen is that the value of the condition port of the If-Else can be a function returned by for example the smaller.js node.
