@@ -185,6 +185,40 @@
 	    { "name": "false", "type": "all" }
 	]
     },
+    {   "name": "not this value",
+	"id": "not-this-value",
+	"group": "Logic",
+	"description": "Logic Expression - any input should not have this value",
+	"inputs": [
+	    { "name": "in1", "type": "all" },
+	    { "name": "in2", "type": "all" },
+	    { "name": "in3", "type": "all" },
+	    { "name": "in4", "type": "all" },
+	    { "name": "in5", "type": "all" },
+	    { "name": "in6", "type": "all" },
+	    { "name": "in7", "type": "all" },
+	    { "name": "in8", "type": "all" },
+	    { "name": "in9", "type": "all" },
+	    { "name": "in10", "type": "all" },
+	    { "name": "in11", "type": "all" },
+	    { "name": "in12", "type": "all" },
+	    { "name": "in13", "type": "all" },
+	    { "name": "in14", "type": "all" },
+	    { "name": "in15", "type": "all" },
+	    { "name": "in16", "type": "all" },
+	    { "name": "in17", "type": "all" },
+	    { "name": "in18", "type": "all" },
+	    { "name": "in19", "type": "all" },
+	    { "name": "in20", "type": "all" }
+	],
+	"state": [
+	    { "name": "value", "type": "text", "many": "yes" }
+	],
+	"outputs": [
+	    { "name": "true", "type": "all" },
+	    { "name": "false", "type": "all" }
+	]
+    },
     {   "name": "greater",
 	"id": "greater",
 	"group": "Logic",

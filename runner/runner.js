@@ -18,6 +18,7 @@ var Mean        = require("./mean.js")
 var Median      = require("./median.js")
 var Sum         = require("./sum.js")
 var AllNotEmpty = require("./all-not-empty.js")
+var NotThisValue = require("./not-this-value.js")
 var ConsoleOut  = require("./console-out.js")
 var IfElse      = require("./if-else.js")
 var ConstantNumber = require("./constant-number.js")
@@ -222,6 +223,8 @@ function work(node, recipe) {
             worker = new IfElse(recipe);
         } else if (node['id'] == 'all-not-empty') {
             worker = new AllNotEmpty(recipe);
+        } else if (node['id'] == 'not-this-value') {
+            worker = new NotThisValue(recipe);
         } else if (node['id'] == 'median') {
             worker = new Median(recipe);
         } else if (node['id'] == 'constant-number') {
