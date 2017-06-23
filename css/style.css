@@ -1,0 +1,47 @@
+.block {
+    width: 300px;
+    height: 300px;
+    display: inline-block;
+    margin-right: 20px;
+}
+.image_container {
+    display: inline-block;
+    overflow: hidden;
+    position: relative;
+    width: 300px;
+    height: 215px;
+}
+
+.image {
+    width: 300px;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+}
+
+.image_container:hover > .edit-icon {
+    opacity: 1;
+    -webkit-transition: all 0.2s ease-in-out;
+    -moz-transition: all 0.2s ease-in-out;
+    -o-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+}
+
+.edit-icon {
+    opacity: 0;
+    background-color: orange;
+    border-radius: 30px;
+    border: 1px solid grey;
+    width: 60px;
+    height: 60px;
+    position: relative;
+    top: 135px;
+    left: 220px;
+    box-shadow: 0px 0px 6px #000;
+}
+.glyphicon {
+    font-size: 20pt;
+    position: absolute;
+    top: 15px;
+    left: 15px;
+}
