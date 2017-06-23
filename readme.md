@@ -1,14 +1,14 @@
-## Auto-scoring
+# Auto-scoring
 
-This project comes in two parts - a viewer for viewing and editing algorithms and a runner for running algorithms.
+This project comes in two parts - a viewer for viewing and editing algorithms and a runner for running algorithms. The top-level web-page is used to show the list of existing algorithms.
 
 ![List of recipes](https://github.com/ABCD-STUDY/auto-scoring/raw/master/images/auto-scoring.png)
 
-### Viewer
+## Viewer
 
-The viewer is used to create a data flow graph using visual programming. Its design has been influenced by other existing data flow graphs such as the one from ThreeNodes.js and Amira.
+The viewer is used to create a data flow graph using visual programming. Its design has been influenced by other existing visual data processing interfaces such as the one from ThreeNodes.js and Amira.
 
-Generally data flows from left to right through "connections" between "nodes". Each node has a list of incoming ports and outgoing ports (and a list of internal state variables). As an example the compute node calculating the mean of its inputs has 10 input ports that may or may not be connected to something. The three output ports represent the mean of the connected inputs, the number of missing (empty string) connected values and the total number of connected values respectively.
+Generally data flows from left to right through "connections" between "nodes". Each node has a list of incoming ports on the left and outgoing ports on the right (and a list of internal state variables). As an example the compute node calculating the mean of its inputs has 10 input ports that may or may not be connected to something. The three output ports represent the mean of the connected inputs, the number of missing (empty string) connected values and the total number of connected values respectively.
 
 ![The viewer used to edit recipes](https://github.com/ABCD-STUDY/auto-scoring/raw/master/images/viewer.png)
 
@@ -44,7 +44,7 @@ There is currently no way to remove a connection between two ports. As a work-ar
 
 Save and load graphs - or "recipes" from the select2 control on the top left of the page. Only Chrome is currently enabled to create a screenshot of the recipe if you save. Both the recipe and its picture are stored in the recipes/ folder of the viewer.
 
-### Runner
+## Runner
 
 The runner is a nodejs program that will run a recipe. Whereas the viewer is a very generic component that might be easily adjusted to different use cases the runner is specialized.
 
@@ -94,4 +94,4 @@ Nodes that do not represent inputs our outputs to the recipe are simplier. They 
 ```
 At the first epoch the constructor will be called that can be used to specify a hidden state or memory of the node. At at each iteration during an epoch the work function is called by the runner providing the current input and state values given the other connected nodes and their states. The computation in the work function of the node is expected to produce the outputs values as specified in the 'name' field of the node definition.
 
-A benefit of using a language where function are first class citizen is that the value of the condition port of the If-Else can be a function returned by for example the smaller.js node.
+A benefit of using a language where functions are first class citizen is that the value of the condition port of the If-Else can be a function returned by for example the smaller.js node.
