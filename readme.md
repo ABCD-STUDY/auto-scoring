@@ -22,17 +22,17 @@ The interface of each node is defined in the items.json file. Here an example of
     "group": "Logic",
     "description": "If-then-else",
     "inputs": [
-	{ "name": "condition", "type": "condition" },
-	{ "name": "a", "type": "all" },
-	{ "name": "b", "type": "all" }
+	{ "name": "condition" },
+	{ "name": "a" },
+	{ "name": "b" }
     ],
     "outputs": [
-	{ "name": "true", "type": "typeof-a" },
-	{ "name": "false", "type": "typeof-a" }
+	{ "name": "true" },
+	{ "name": "false" }
     ],
     "state": [
-	{ "name": "a", "type": "text", "many": "yes" },
-	{ "name": "b", "type": "text", "many": "yes" }
+	{ "name": "a" },
+	{ "name": "b" }
     ]
 }
 ```
