@@ -97,9 +97,9 @@ if (isset($_GET['load'])) {
           <div id="left" style="position: absolute; margin: 0px; margin-left: 10px; left: 4px; top: 67px; bottom: 14px; width: 250px; z-index: 0; display: block; overflow-y: scroll; overflow-x: hidden;">
              <div id="left-top" style="position: relative; height: 80px; overflow: hidden;">
                   <div style="background: #313638;">
-                    <div class="form-control" style="background: #313638; border: 0px;">
-                        <button class="btn" id="save-new-recipe" data-toggle="modal" data-target="#save-recipe-dialog">Save</button>
-                        <button class="btn" id="create-new-recipe">New</button>
+                    <div class="form-control" style="background: #313638; border: 0px; font-size: 2pt;">
+                        <button class="btn" id="save-new-recipe" data-toggle="modal" data-target="#save-recipe-dialog">Save As</button>
+                        <button class="btn" id="create-new-recipe">Clear</button>
                         <button class="btn" id="delete-recipe">Delete</button>
                     </div>
                     <div class="form-control" style="background: #313638; border: 0px;">
@@ -133,6 +133,7 @@ if (isset($_GET['load'])) {
 		 <input type="text" id="new-name"></input>
 	       </div>
 	     </form>
+             <p>After you save a new reicpe reload the auto-scoring page to see the changes</p>                                                                                                            
            </div>
            <div class="modal-footer">
              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
