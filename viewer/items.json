@@ -1,0 +1,306 @@
+[
+    { 
+	"name": "REDCap Get",
+	"id": "redcap-measure-get",
+	"group": "Input",
+	"description": "Pull a list of variables from REDCap",
+	"inputs": [
+	],
+	"outputs": [
+	    { "name": "out1", "type": "constant-text", "many": "yes" },
+	    { "name": "out2", "type": "constant-text", "many": "yes" },
+	    { "name": "out3", "type": "constant-text", "many": "yes" },
+	    { "name": "out4", "type": "constant-text", "many": "yes" },
+	    { "name": "out5", "type": "constant-text", "many": "yes" },
+	    { "name": "out6", "type": "constant-text", "many": "yes" },
+	    { "name": "out7", "type": "constant-text", "many": "yes" },
+	    { "name": "out8", "type": "constant-text", "many": "yes" },
+	    { "name": "out9", "type": "constant-text", "many": "yes" },
+	    { "name": "out10", "type": "constant-text", "many": "yes" },
+	    { "name": "out11", "type": "constant-text", "many": "yes" },
+	    { "name": "out12", "type": "constant-text", "many": "yes" }
+	],
+	"state": [
+	    { "name": "item1", "type": "text", "many": "yes" },
+	    { "name": "item2", "type": "text", "many": "yes" },
+	    { "name": "item3", "type": "text", "many": "yes" },
+	    { "name": "item4", "type": "text", "many": "yes" },
+	    { "name": "item5", "type": "text", "many": "yes" },
+	    { "name": "item6", "type": "text", "many": "yes" },
+	    { "name": "item7", "type": "text", "many": "yes" },
+	    { "name": "item8", "type": "text", "many": "yes" },
+	    { "name": "item9", "type": "text", "many": "yes" },
+	    { "name": "item10", "type": "text", "many": "yes" },
+	    { "name": "item11", "type": "text", "many": "yes" },
+	    { "name": "item12", "type": "text", "many": "yes" }
+	]
+    },
+    { 
+	"name": "REDCap Put",
+	"id": "redcap-measure-put",
+	"group": "Output",
+	"description": "Send a list of variables to REDCap",
+	"inputs": [
+	],
+	"outputs": [],
+	"inputs": [
+	    { "name": "in1", "type": "constant-text", "many": "yes" },
+	    { "name": "in2", "type": "constant-text", "many": "yes" },
+	    { "name": "in3", "type": "constant-text", "many": "yes" },
+	    { "name": "in4", "type": "constant-text", "many": "yes" },
+	    { "name": "in5", "type": "constant-text", "many": "yes" }
+	],
+	"state": [
+	    { "name": "item1", "type": "text", "many": "yes" },
+	    { "name": "item2", "type": "text", "many": "yes" },
+	    { "name": "item3", "type": "text", "many": "yes" },
+	    { "name": "item4", "type": "text", "many": "yes" },
+	    { "name": "item5", "type": "text", "many": "yes" }
+	]
+    },
+    { 
+	"name": "Console Out",
+	"id": "console-out",
+	"group": "Output",
+	"description": "Show variables on the command line",
+	"inputs": [
+	],
+	"outputs": [	],
+	"inputs": [
+	    { "name": "in1", "type": "constant-text", "many": "yes" },
+	    { "name": "in2", "type": "constant-text", "many": "yes" },
+	    { "name": "in3", "type": "constant-text", "many": "yes" },
+	    { "name": "in4", "type": "constant-text", "many": "yes" },
+	    { "name": "in5", "type": "constant-text", "many": "yes" }
+	],
+	"state": []
+    },
+    {
+	"name": "Constant Text",
+	"id": "constant-text",
+	"group": "Input",
+	"description": "A single value as a string",
+	"inputs": [],
+	"outputs": [
+	    { "name": "out", "type": "constant-text" }
+	],
+	"state": [
+	    { "name": "item", "type": "text", "many": "yes" }
+	]	
+    },
+    {
+	"name": "Constant Number",
+	"id": "constant-number",
+	"group": "Input",
+	"description": "A single value as a number",
+	"inputs": [],
+	"outputs": [
+	    { "name": "out", "type": "constant-number" }
+	],
+	"state": [
+	    { "name": "item", "type": "text", "many": "yes" }
+	]	
+    },
+    {   "name": "not",
+	"id": "not",
+	"group": "Logic",
+	"description": "Logic Expression - Not",
+	"inputs": [
+	    { "name": "in", "type": "all" }
+	],
+	"outputs": [
+	    { "name": "out", "type": "all" }
+	]
+    },
+    {   "name": "equal",
+	"id": "equal",
+	"group": "Logic",
+	"description": "Logic Expression - equal",
+	"inputs": [],
+	"outputs": [
+	    { "name": "out", "type": "all" }
+	]
+    },
+    {   "name": "smaller",
+	"id": "smaller",
+	"group": "Logic",
+	"description": "Logic Expression - Smaller",
+	"inputs": [],
+	"outputs": [
+	    { "name": "out", "type": "all" }
+	]
+    },
+    {   "name": "smaller-equal",
+	"id": "smaller-equal",
+	"group": "Logic",
+	"description": "Logic Expression - Smaller or Equal",
+	"inputs": [],
+	"outputs": [
+	    { "name": "out", "type": "all" }
+	]
+    },
+    {   "name": "greater-equal",
+	"id": "greater-equal",
+	"group": "Logic",
+	"description": "Logic Expression - Greater or Equal",
+	"inputs": [],
+	"outputs": [
+	    { "name": "out", "type": "all" }
+	]
+    },
+    {   "name": "all not empty",
+	"id": "all-not-empty",
+	"group": "Logic",
+	"description": "Logic Expression - all inputs not empty strings",
+	"inputs": [
+	    { "name": "in1", "type": "all" },
+	    { "name": "in2", "type": "all" },
+	    { "name": "in3", "type": "all" },
+	    { "name": "in4", "type": "all" },
+	    { "name": "in5", "type": "all" },
+	    { "name": "in6", "type": "all" },
+	    { "name": "in7", "type": "all" },
+	    { "name": "in8", "type": "all" },
+	    { "name": "in9", "type": "all" },
+	    { "name": "in10", "type": "all" }
+	],
+	"outputs": [
+	    { "name": "true", "type": "all" },
+	    { "name": "false", "type": "all" }
+	]
+    },
+    {   "name": "greater",
+	"id": "greater",
+	"group": "Logic",
+	"description": "Logic Expression - Greater",
+	"inputs": [],
+	"outputs": [
+	    { "name": "out", "type": "all" }
+	]
+    },
+    {   "name": "sum",
+	"id": "sum",
+	"group": "Arithmetic",
+	"description": "Sum of all connected input values",
+	"inputs": [
+	    { "name": "in1", "type": "all" },
+	    { "name": "in2", "type": "all" },
+	    { "name": "in3", "type": "all" },
+	    { "name": "in4", "type": "all" },
+	    { "name": "in5", "type": "all" },
+	    { "name": "in6", "type": "all" },
+	    { "name": "in7", "type": "all" },
+	    { "name": "in8", "type": "all" },
+	    { "name": "in9", "type": "all" },
+	    { "name": "in10", "type": "all" }
+	],
+	"outputs": [
+	    { "name": "out", "type": "all" },
+	    { "name": "num_missing", "type": "all" },
+	    { "name": "num_total", "type": "all" }
+	]
+    },
+    {   "name": "maximum",
+	"id": "maximum",
+	"group": "Arithmetic",
+	"description": "Maximum of all connected input values",
+	"inputs": [
+	    { "name": "in1", "type": "all" },
+	    { "name": "in2", "type": "all" },
+	    { "name": "in3", "type": "all" },
+	    { "name": "in4", "type": "all" },
+	    { "name": "in5", "type": "all" },
+	    { "name": "in6", "type": "all" },
+	    { "name": "in7", "type": "all" },
+	    { "name": "in8", "type": "all" },
+	    { "name": "in9", "type": "all" },
+	    { "name": "in10", "type": "all" }
+	],
+	"outputs": [
+	    { "name": "out", "type": "all" }
+	]
+    },
+   {   "name": "minimum",
+	"id": "minimum",
+	"group": "Arithmetic",
+	"description": "Minimum of all connected input values",
+	"inputs": [
+	    { "name": "in1", "type": "all" },
+	    { "name": "in2", "type": "all" },
+	    { "name": "in3", "type": "all" },
+	    { "name": "in4", "type": "all" },
+	    { "name": "in5", "type": "all" },
+	    { "name": "in6", "type": "all" },
+	    { "name": "in7", "type": "all" },
+	    { "name": "in8", "type": "all" },
+	    { "name": "in9", "type": "all" },
+	    { "name": "in10", "type": "all" }
+	],
+	"outputs": [
+	    { "name": "out", "type": "all" }
+	]
+    },
+    {   "name": "mean",
+	"id": "mean",
+	"group": "Arithmetic",
+	"description": "Mean of all connected values",
+	"inputs": [
+	    { "name": "in1", "type": "all" },
+	    { "name": "in2", "type": "all" },
+	    { "name": "in3", "type": "all" },
+	    { "name": "in4", "type": "all" },
+	    { "name": "in5", "type": "all" },
+	    { "name": "in6", "type": "all" },
+	    { "name": "in7", "type": "all" },
+	    { "name": "in8", "type": "all" },
+	    { "name": "in9", "type": "all" },
+	    { "name": "in10", "type": "all" }
+	],
+	"outputs": [
+	    { "name": "out", "type": "all" },
+	    { "name": "num_missing", "type": "all" },
+	    { "name": "num_total", "type": "all" }
+	]
+    },
+    {   "name": "median",
+	"id": "median",
+	"group": "Arithmetic",
+	"description": "Median of all connected values",
+	"inputs": [
+	    { "name": "in1", "type": "all" },
+	    { "name": "in2", "type": "all" },
+	    { "name": "in3", "type": "all" },
+	    { "name": "in4", "type": "all" },
+	    { "name": "in5", "type": "all" },
+	    { "name": "in6", "type": "all" },
+	    { "name": "in7", "type": "all" },
+	    { "name": "in8", "type": "all" },
+	    { "name": "in9", "type": "all" },
+	    { "name": "in10", "type": "all" }
+	],
+	"outputs": [
+	    { "name": "out", "type": "all" },
+	    { "name": "num_missing", "type": "all" },
+	    { "name": "num_total", "type": "all" }
+	]
+    },
+    {
+	"name": "If-Else",
+	"id": "if-else",
+	"group": "Logic",
+	"description": "If-then-else",
+	"inputs": [
+	    { "name": "condition", "type": "condition" },
+	    { "name": "a", "type": "all" },
+	    { "name": "b", "type": "all" }	    
+	],
+	"outputs": [
+	    { "name": "true", "type": "typeof-a" },
+	    { "name": "false", "type": "typeof-a" }
+	],
+	"state": [
+	    { "name": "a", "type": "text", "many": "yes" },
+	    { "name": "b", "type": "text", "many": "yes" }
+	]		
+    }
+]
