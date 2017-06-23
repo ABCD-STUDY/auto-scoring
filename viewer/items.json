@@ -18,7 +18,15 @@
 	    { "name": "out9", "type": "constant-text", "many": "yes" },
 	    { "name": "out10", "type": "constant-text", "many": "yes" },
 	    { "name": "out11", "type": "constant-text", "many": "yes" },
-	    { "name": "out12", "type": "constant-text", "many": "yes" }
+	    { "name": "out12", "type": "constant-text", "many": "yes" },
+	    { "name": "out13", "type": "constant-text", "many": "yes" },
+	    { "name": "out14", "type": "constant-text", "many": "yes" },
+	    { "name": "out15", "type": "constant-text", "many": "yes" },
+	    { "name": "out16", "type": "constant-text", "many": "yes" },
+	    { "name": "out17", "type": "constant-text", "many": "yes" },
+	    { "name": "out18", "type": "constant-text", "many": "yes" },
+	    { "name": "out19", "type": "constant-text", "many": "yes" },
+	    { "name": "out20", "type": "constant-text", "many": "yes" }
 	],
 	"state": [
 	    { "name": "item1", "type": "text", "many": "yes" },
@@ -32,7 +40,15 @@
 	    { "name": "item9", "type": "text", "many": "yes" },
 	    { "name": "item10", "type": "text", "many": "yes" },
 	    { "name": "item11", "type": "text", "many": "yes" },
-	    { "name": "item12", "type": "text", "many": "yes" }
+	    { "name": "item12", "type": "text", "many": "yes" },
+	    { "name": "item13", "type": "text", "many": "yes" },
+	    { "name": "item14", "type": "text", "many": "yes" },
+	    { "name": "item15", "type": "text", "many": "yes" },
+	    { "name": "item16", "type": "text", "many": "yes" },
+	    { "name": "item17", "type": "text", "many": "yes" },
+	    { "name": "item18", "type": "text", "many": "yes" },
+	    { "name": "item19", "type": "text", "many": "yes" },
+	    { "name": "item20", "type": "text", "many": "yes" }
 	]
     },
     { 
@@ -192,7 +208,17 @@
 	    { "name": "in7", "type": "all" },
 	    { "name": "in8", "type": "all" },
 	    { "name": "in9", "type": "all" },
-	    { "name": "in10", "type": "all" }
+	    { "name": "in10", "type": "all" },
+	    { "name": "in11", "type": "all" },
+	    { "name": "in12", "type": "all" },
+	    { "name": "in13", "type": "all" },
+	    { "name": "in14", "type": "all" },
+	    { "name": "in15", "type": "all" },
+	    { "name": "in16", "type": "all" },
+	    { "name": "in17", "type": "all" },
+	    { "name": "in18", "type": "all" },
+	    { "name": "in19", "type": "all" },
+	    { "name": "in20", "type": "all" }
 	],
 	"outputs": [
 	    { "name": "out", "type": "all" },
@@ -254,7 +280,17 @@
 	    { "name": "in7", "type": "all" },
 	    { "name": "in8", "type": "all" },
 	    { "name": "in9", "type": "all" },
-	    { "name": "in10", "type": "all" }
+	    { "name": "in10", "type": "all" },
+	    { "name": "in11", "type": "all" },
+	    { "name": "in12", "type": "all" },
+	    { "name": "in13", "type": "all" },
+	    { "name": "in14", "type": "all" },
+	    { "name": "in15", "type": "all" },
+	    { "name": "in16", "type": "all" },
+	    { "name": "in17", "type": "all" },
+	    { "name": "in18", "type": "all" },
+	    { "name": "in19", "type": "all" },
+	    { "name": "in20", "type": "all" }
 	],
 	"outputs": [
 	    { "name": "out", "type": "all" },
