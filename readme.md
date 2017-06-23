@@ -12,7 +12,29 @@ The viewer is used to create a data flow graph using visual programming. General
 
 Drag- and drop a node from the list on the left to the canvas to instantiate a node. Drag- and drop using the gray port circles on each node to create a connection. Select a node to get a list of the internal state variables on the left.
 
-The interface of a node is defined in the items.json file. The structure contain the name and the three lists inputs, outputs and state that define the interface of the node. Inputs and outputs are translated into ports that have a name and a connection circle. The state list is displayed on the left hand side if a node is selected. Usually state variables are used to provide default values for an input or output port. In the case of the redcap_get.js node the state variable identify the names of REDCap variables that should be used for processing. In the case of the If-Else.js node the state variables can be used to represent default values for the 'a' or 'b' inputs. State variables in the If-Else node are overwritten by data arriving at the node over connections from other nodes. 
+The interface of each node is defined in the items.json file. Here an example of one nodes specification:
+```
+{
+    "name": "If-Else",
+    "id": "if-else",
+    "group": "Logic",
+    "description": "If-then-else",
+    "inputs": [
+	{ "name": "condition", "type": "condition" },
+	{ "name": "a", "type": "all" },
+	{ "name": "b", "type": "all" }
+    ],
+    "outputs": [
+	{ "name": "true", "type": "typeof-a" },
+	{ "name": "false", "type": "typeof-a" }
+    ],
+    "state": [
+	{ "name": "a", "type": "text", "many": "yes" },
+	{ "name": "b", "type": "text", "many": "yes" }
+    ]
+}
+```
+The structure contains three lists: inputs, outputs and state that define the interface of the node. Inputs and outputs are translated into ports that have a name and a connection circle. The state list is displayed on the left hand side of the interface if a node is selected (mouse click without mouse move). Usually state variables are used to provide default values for an input or output port. In the case of the redcap_get.js node the state variable identify the names of REDCap variables that should be used for processing. In the case of the If-Else.js node the state variables can be set to provide default values for the 'a' or 'b' input ports. State variables in the If-Else node are overwritten by data arriving at the node over connections from other nodes. 
 
 Nodes have two special visual elements at the top. The orange circle on the left is an enabler connection. Anything connecting to this special port will disable the node if its evaluated to 'false' or '0'. The orange cross on the top right of each node can be used to remove a node.
 
@@ -29,3 +51,5 @@ In the context of this project sets of input values represent raw scores for par
 If node represents input our outputs to the graph it defines a epoch() function. Other processing nodes will not implement epoch() but solely depend on their input ports for processing. For example the redcap_get.js node will pull a list of participant scores from REDCap. Each single participants data is processed in one epoch. During that epoch the outputs of the redcap_get.js node are the values for the current participant.
 
 Epoch information is also used by the output node redcap_put.js. This node caches the calculated values from the end of the epoch to prevent particially calculated values during the non-deterministic execution of the graph.
+
+			
