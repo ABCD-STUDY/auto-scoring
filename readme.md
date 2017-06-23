@@ -4,6 +4,8 @@ This project comes in two parts - a viewer for viewing and editing algorithms an
 
 ![List of recipes](https://github.com/ABCD-STUDY/auto-scoring/raw/master/images/auto-scoring.png)
 
+There are some dependencies in the code to pieces used in the ABCD report framework. This includes a role-based user account system (AC.php) which you should disable in the source code of the index.php scripts if you don't have it. There is also a separate tokens.json file that we cannot share here. It contains the access tokens required for the program to interface with the electronic record system (REDCap).
+
 ## Viewer
 
 The viewer is used to create a data flow graph using visual programming. Its design has been influenced by other existing visual data processing interfaces such as the one from ThreeNodes.js and Amira.
