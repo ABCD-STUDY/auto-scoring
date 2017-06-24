@@ -321,6 +321,8 @@ function fillItems() {
 	    drop: function(event, ui) {
 		// add child here
 		var pos = ui.position;
+		pos.top = pos.top + jQuery(this).scrollTop();
+		pos.left = pos.left + jQuery(this).scrollLeft();
 		item = jQuery(ui.helper).attr('type-id');
 		for(var i = 0; i < items.length; i++) {
 		    if (items[i]['id'] == item) {
