@@ -107,7 +107,7 @@ if (isset($_GET['load'])) {
                   </div>
              </div>
              <div id="left-up" style="position: relative; height: 550px; overflow: hidden;">
-    <center style="border-top: 1px solid grey;">(drag&drop entries)</center>
+    <center style="border-top: 1px solid grey;">(drag & drop entries &#x21E2)</center>
              </div>
              <div id="left-down"></div>
           </div>

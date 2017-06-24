@@ -102,34 +102,40 @@ function createGraphicForItem( item, pos ) {
 	.attr('r', 5)
 	.attr('cx', 9)
 	.attr('cy', 9)
+        .attr('stroke', '#333')
+	.attr('stroke-width', 0.5)
 	.attr('class', 'connectable')
 	.attr('fill', "orange")
     jQuery(g3).append(r);
     jQuery(g).append(g3);
 
-    // add delete
-    var g4 = jQuery(SVG('g'))
-	.attr('class', 'deleteitem');
-    var r4 = jQuery(SVG('rect'))
-        .attr('width', 13)
-        .attr('height', 13)
-	.attr('x', w-16)
-	.attr('y', 3)
+    var close = jQuery(SVG('g'))
+	.attr('width', '50')
+	.attr('height', '50')
 	.attr('class', 'deleteitem')
-	.attr('stroke', 'darkgray')
-	.attr('fill', 'gray')
-	.attr('rx', 1)
-	.attr('ry', 1);
-    var t4 = jQuery(SVG('text'))
-	.attr('x', w-12)
-	.attr('y', 13)
-	.attr('class', 'deleteitem')
-	.attr('stroke', 'none')
-	.attr('fill', 'orange');
-    jQuery(t4).append("x");
-    jQuery(g4).append(r4);
-    jQuery(g4).append(t4);
-    jQuery(g).append(g4);
+	.attr('transform', 'translate(' + (w-15) + ',2) scale(0.25,0.25)')
+	.attr('viewBox', '0 0 50 50');
+    jQuery(g).append(close);
+    var close_g = jQuery(SVG('g'));
+    jQuery(close).append(close_g);
+    var close_p1 = jQuery(SVG('path'))
+	.attr('d', 'M50,45.233C50,47.866,47.866,50,45.233,50H4.767C2.134,50,0,47.866,0,45.233V4.767     C0,2.134,2.134,0,4.767,0h40.466C47.866,0,50,2.134,50,4.767V45.233z')
+	.attr('fill', '#999');
+    jQuery(close_g).append(close_p1);
+    var close_p2 = jQuery(SVG('path'))
+	.attr('d', 'M37.029,15.342L15.342,37.029L28.313,50h16.92C47.866,50,50,47.866,50,45.233v-16.92L37.029,15.342z')
+	.attr('opacity', '0.2');
+    jQuery(close_g).append(close_p2);
+    var close_gg = jQuery(SVG('g'));
+    jQuery(close_g).append(close_gg);
+    var close_gg_p = jQuery(SVG('path'))
+	.attr('d', 'M37.029,32.482c0.601,0.601,0.601,1.576,0,2.177l-2.371,2.371c-0.601,0.601-1.576,0.601-2.177,0      L12.971,17.518c-0.601-0.601-0.601-1.576,0-2.177l2.371-2.371c0.601-0.601,1.576-0.601,2.177,0L37.029,32.482z')
+	.attr('fill', '#FFF');
+    jQuery(close_gg).append(close_gg_p);
+    var close_gg_p2 = jQuery(SVG('path'))
+	.attr('d', 'M32.482,12.971c0.601-0.601,1.576-0.601,2.177,0l2.371,2.371c0.601,0.601,0.601,1.576,0,2.177      L17.518,37.029c-0.601,0.601-1.576,0.601-2.177,0l-2.371-2.371c-0.601-0.601-0.601-1.576,0-2.177L32.482,12.971z')
+	.attr('fill', '#FFF');
+    jQuery(close_gg).append(close_gg_p2);
     
     // the inputs
     for (var i = 0; i < item['inputs'].length; i++) {
@@ -416,7 +422,7 @@ function fillItems() {
 
     jQuery('#right_svg').on('mouseup', '.deleteitem', function(e) {
 	// find out all connections to this node
-	var gid = jQuery(this).parent().parent().attr('gid');
+	var gid = jQuery(this).parent().attr('gid');
 	var cons = connectionsFor( gid );
 
 	// now we can remove this node (gid) and the connections to this node
