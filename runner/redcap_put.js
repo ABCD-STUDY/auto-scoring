@@ -88,9 +88,9 @@ RedcapPut.prototype.work = function (inputs, outputs, state) {
         }
     }
     // every once in a while send the collated data to REDCap
-    if (this._results.length % 50 == 0) {
-        console.log("Results (" + this._results.length + "): \n" + JSON.stringify(this._results.slice(-10), null, '  '));
-    }
+    //if (this._results.length % 50 == 0) {
+        console.log("Results (" + this._results.length + "): \n" + JSON.stringify(this._results, null, '  '));
+    //}
 };
 
 module.exports = RedcapPut;

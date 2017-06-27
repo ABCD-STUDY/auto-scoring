@@ -62,10 +62,12 @@ function getInputValues(n, recipe) {
                     var value = undefined;
                     if (typeof targetNode['outputs'] !== 'undefined') {
                         // value = targetNode['state'][outputPort]['value'];  // this is the internal value, not the calculated one
-                        value = targetNode['outputs'][outputPort]['value'];
+                        if (typeof targetNode['outputs'][outputPort]['value'] !== 'undefined')
+                            value = targetNode['outputs'][outputPort]['value'];
                     }
 
                     // add to inputs
+                    // for undefined this would indicate that a value was expected - but could not be set by the recipe at this point in time
                     inputs[thisinputName] = value;
                 }
             }

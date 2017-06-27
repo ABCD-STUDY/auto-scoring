@@ -9,7 +9,7 @@ AllNotEmpty.prototype.work = function (inputs, outputs, state) {
     var obj = Object.keys(inputs);
     for (var i = 0; i < obj.length; i++) {
         if (inputs[obj[i]] === "" || inputs[obj[i]] === undefined) {
-            outputs['true'] = 0;
+            outputs['true'] = 0;  // we found one entry that is not empty
             outputs['false'] = 1;
             return;
         }

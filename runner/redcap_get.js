@@ -16,6 +16,7 @@ var RedcapGet = function (state) {
     this._numCalls = 0;
     this._nextEpoch = false;
     this._currentEpoch = 0;
+    this._waitingForData = true;
 
     // get the configuration for this node
     //var tokens = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../../code/php/tokens.json'), 'utf8'));
@@ -37,7 +38,7 @@ var RedcapGet = function (state) {
             'rawOrLabelHeaders': 'raw',
             'exportCheckboxLabel': 'false',
             'exportSurveyFields': 'false',
-            'exportDataAccessGroups': 'false',
+            'exportDataAccessGroups': 'false',  // we do this manually below based on the token key
             'returnFormat': 'json'
         };
 
@@ -86,6 +87,7 @@ var RedcapGet = function (state) {
                 entry['redcap_data_access_group'] = site;
                 self._participants.push(entry);
             }
+            self._waitingForData = false; // we got some data from REDCap (what if this takes too long?)
             //console.log("do the callback now...");
             callback();
         });
@@ -135,6 +137,10 @@ RedcapGet.prototype.epoch = function (epoch) {
     return true; // we are doneDone, no more participants
 }
 
+RedcapGet.prototype.done = function() {
+    // indicate that there was a change if we are just waiting for data coming in
+    return !this._waitingForData;
+}
 
 // inputs and state are read only, outputs can be written
 RedcapGet.prototype.work = function (inputs, outputs, state) {
@@ -174,9 +180,11 @@ RedcapGet.prototype.work = function (inputs, outputs, state) {
         if (typeof state[i]['value'] === 'undefined')
             continue;
         if (typeof entry[ state[i]['value'] ] === 'undefined' ) {
-            console.log("Error: tried to get variable \"" + state[i]['value'] + "\" from REDCap but could not get it.");
+            //console.log("Error: tried to get variable \"" + state[i]['value'] + "\" from REDCap but could not get it.");
             continue;
         }
+        if ( state[i]['value'] === 'id_redcap' || state[i]['value'] === 'redcap_event_name' )
+            continue; // don't overwrite
         // find out if we have to look for a checkbox, in that case ask for the variable instead
         var val = entry [ state[i]['value'] ];
         outputs[ state[i]['value'] ] = val;

@@ -372,5 +372,39 @@
 	    { "name": "a", "type": "text", "many": "yes" },
 	    { "name": "b", "type": "text", "many": "yes" }
 	]		
+    },
+    {
+	"name": "filter",
+	"id": "filter",
+	"group": "Arithmetic",
+	"description": "Map input value to output values",
+	"inputs": [
+	    { "name": "value1", "type": "all" },
+	    { "name": "value2", "type": "all" },	    
+	    { "name": "value3", "type": "all" },	    
+	    { "name": "value4", "type": "all" },	    
+	    { "name": "value5", "type": "all" },	    
+	    { "name": "value6", "type": "all" },	    
+	    { "name": "value7", "type": "all" },	    
+	    { "name": "value8", "type": "all" },	    
+	    { "name": "value9", "type": "all" },	    
+	    { "name": "value10", "type": "all" }	    
+	],
+	"outputs": [
+	    { "name": "value1", "type": "all" },
+	    { "name": "value2", "type": "all" },	    
+	    { "name": "value3", "type": "all" },	    
+	    { "name": "value4", "type": "all" },	    
+	    { "name": "value5", "type": "all" },	    
+	    { "name": "value6", "type": "all" },	    
+	    { "name": "value7", "type": "all" },	    
+	    { "name": "value8", "type": "all" },	    
+	    { "name": "value9", "type": "all" },	    
+	    { "name": "value10", "type": "all" }	    
+	],
+	"state": [
+	    { "name": "value", "type": "text", "many": "yes" },
+	    { "name": "replacement", "type": "text", "many": "yes" }
+	]		
     }
 ]
