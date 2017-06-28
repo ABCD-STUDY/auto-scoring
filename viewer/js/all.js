@@ -617,6 +617,19 @@ function createConnections() {
 	    .attr('cid', id)
 	    .attr('d', str);
 	jQuery('#connects').append(p);
+
+	var marker = jQuery(SVG('circle'))
+	    .attr('class', 'marker')
+	    .attr('r',1)
+	    .attr('cx', 0)
+	    .attr('cy', 0)
+	    .css('offset-path', 'path("' + str + '")')
+	    .css('animation', 'move 3s linear infinite')
+	    .css('animation-name', 'move')
+	    .css('animation-iteration-count', 'infinite')
+	    .attr('fill', 'grey');
+	jQuery('#connects').append(marker);
+	
     }
 }
 
