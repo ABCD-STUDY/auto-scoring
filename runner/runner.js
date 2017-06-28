@@ -25,6 +25,8 @@ var ConstantNumber = require("./constant-number.js")
 var ConstantText = require("./constant-text.js")
 var SmallerEqual = require("./smallerequal.js")
 var GreaterEqual = require("./greaterequal.js")
+var Maximum      = require("./maximum.js")
+var Minimum      = require("./minimum.js")
 
 var exportFileName = "";
 
@@ -219,6 +221,10 @@ function work(node, recipe) {
             worker = new SmallerEqual(recipe);
         } else if (node['id'] == 'greater-equal') {
             worker = new GreaterEqual(recipe);
+        } else if (node['id'] == 'maximum') {
+            worker = new Maximum(recipe);
+        } else if (node['id'] == 'minimum') {
+            worker = new Minimum(recipe);
         } else if (node['id'] == 'console-out') {
             worker = new ConsoleOut(recipe);
         } else if (node['id'] == 'if-else') {
