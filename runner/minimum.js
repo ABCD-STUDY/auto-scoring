@@ -22,7 +22,7 @@ Minimum.prototype.work = function (inputs, outputs, state) {
 	}
     }
     if (min !== null)
-        outputs['out'] = min;
+        outputs['min'] = min;
     outputs['num_missing'] = num_missing;
     outputs['num_total']   = obj.length;
 };

@@ -22,7 +22,7 @@ Maximum.prototype.work = function (inputs, outputs, state) {
 	}
     }
     if (max !== null)
-        outputs['out'] = max;
+        outputs['max'] = max;
     outputs['num_missing'] = num_missing;
     outputs['num_total']   = obj.length;
 };

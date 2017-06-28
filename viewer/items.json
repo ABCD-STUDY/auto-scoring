@@ -277,7 +277,9 @@
 	    { "name": "in10", "type": "all" }
 	],
 	"outputs": [
-	    { "name": "out", "type": "all" }
+	    { "name": "max", "type": "all" },
+	    { "name": "num_missing", "type": "all" },
+	    { "name": "num_total", "type": "all" }
 	]
     },
    {   "name": "minimum",
@@ -297,7 +299,9 @@
 	    { "name": "in10", "type": "all" }
 	],
 	"outputs": [
-	    { "name": "out", "type": "all" }
+	    { "name": "min", "type": "all" },
+	    { "name": "num_missing", "type": "all" },
+	    { "name": "num_total", "type": "all" }
 	]
     },
     {   "name": "mean",
