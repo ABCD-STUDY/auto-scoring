@@ -106,14 +106,32 @@ function createGraphicForItem( item, pos ) {
 	.attr('stroke-width', 0.5)
 	.attr('class', 'connectable')
 	.attr('fill', "orange")
+    var powerg = jQuery(SVG('g'))
+	.attr('transform', 'translate(5.8,5.5) scale(0.018)');
+    var powerg1 = jQuery(SVG('g'));
+    var powerg2 = jQuery(SVG('g'));
+    var one = jQuery(SVG('path'))
+	.attr('stroke', 'none')
+	.attr('fill', '#777')
+	.attr('d', 'M174.787,349.574c-85.468,0-155-69.531-155-155c0-49.915,24.27-97.069,64.92-126.142 c10.997-7.861,26.282-5.323,34.142,5.674c7.864,10.995,5.326,26.281-5.67,34.142c-27.829,19.902-44.446,52.174-44.446,86.326 c0,58.482,47.575,106.054,106.054,106.054s106.054-47.571,106.054-106.054c0-34.152-16.617-66.424-44.446-86.326 c-10.996-7.86-13.534-23.146-5.67-34.142c7.86-10.996,23.146-13.535,34.142-5.674c40.65,29.072,64.92,76.227,64.92,126.142 C329.787,280.043,260.255,349.574,174.787,349.574z');
+    jQuery(powerg1).append(one);
+    jQuery(powerg).append(powerg1);
+    jQuery(powerg).append(powerg2);
+    var two = jQuery(SVG('path'))
+	.attr('stroke', 'none')
+	.attr('fill', '#777')
+	.attr('d', 'M174.787,187.631c-13.516,0-24.473-10.957-24.473-24.477V24.47c0-13.513,10.957-24.47,24.473-24.47 s24.473,10.957,24.473,24.47v138.685C199.26,176.674,188.303,187.631,174.787,187.631z');
+    jQuery(powerg2).append(two);
+
     jQuery(g3).append(r);
+    jQuery(g3).append(powerg);
     jQuery(g).append(g3);
 
     var close = jQuery(SVG('g'))
 	.attr('width', '50')
 	.attr('height', '50')
 	.attr('class', 'deleteitem')
-	.attr('transform', 'translate(' + (w-15) + ',2) scale(0.25,0.25)')
+	.attr('transform', 'translate(' + (w-16) + ',3) scale(0.25,0.25)')
 	.attr('viewBox', '0 0 50 50');
     jQuery(g).append(close);
     var close_g = jQuery(SVG('g'));
@@ -168,7 +186,17 @@ function createGraphicForItem( item, pos ) {
 	    .attr('fill', '#aaa')
 	    .attr('class', 'connectable')
 	    .attr('cy', 30+i*14 - 3);
+	var arrowg = jQuery(SVG('g'))
+	    .attr('stroke', 'none')
+	    .attr('stroke-width', 1)
+	    .attr('transform', 'translate(2.5,' + (30+i*14 - 5.3) + ') scale(0.3)')
+	    .attr('fill', 'none');
+	var arrow = jQuery(SVG('path'))
+	    .attr('d', 'M16.818,7.646 L10.878,2.206 C10.644,1.992 10.264,1.993 10.029,2.208 L10.024,6.001 L2,6.001 C1.447,6.001 1,6.448 1,7.001 L1,9.001 C1,9.554 1.447,10.001 2,10.001 L10.019,10.001 L10.013,13.878 C10.245,14.091 10.626,14.09 10.862,13.875 L16.816,8.423 C17.049,8.206 17.052,7.859 16.818,7.646 L16.818,7.646 Z')
+	    .attr('fill','#888');
+	jQuery(arrowg).append(arrow);
 	jQuery(g2).append(cir);
+	jQuery(g2).append(arrowg);
 	jQuery(tt).append(item['inputs'][i]['name']);
 	jQuery(g2).append(tt);
 	jQuery(g).append(g2);
@@ -205,7 +233,17 @@ function createGraphicForItem( item, pos ) {
 	    .attr('fill', '#aaa')
 	    .attr('cx', w-5)
 	    .attr('cy', 30+i*14 - 3);
+	var arrowg = jQuery(SVG('g'))
+	    .attr('stroke', 'none')
+	    .attr('stroke-width', 1)
+	    .attr('transform', 'translate(' + (w-8) + ',' + (30+i*14 - 5.3) + ') scale(0.3)')
+	    .attr('fill', 'none');
+	var arrow = jQuery(SVG('path'))
+	    .attr('d', 'M16.818,7.646 L10.878,2.206 C10.644,1.992 10.264,1.993 10.029,2.208 L10.024,6.001 L2,6.001 C1.447,6.001 1,6.448 1,7.001 L1,9.001 C1,9.554 1.447,10.001 2,10.001 L10.019,10.001 L10.013,13.878 C10.245,14.091 10.626,14.09 10.862,13.875 L16.816,8.423 C17.049,8.206 17.052,7.859 16.818,7.646 L16.818,7.646 Z')
+	    .attr('fill','#888');
+	jQuery(arrowg).append(arrow);
 	jQuery(g2).append(cir);
+	jQuery(g2).append(arrowg);
 	jQuery(tt).append(item['outputs'][i]['name']);
 	jQuery(g2).append(tt);
 	jQuery(g).append(g2);
@@ -521,7 +559,7 @@ function addStateDisplay( state ) {
 	// remove any existing displays
 	jQuery('#'+ gid + '-' + state[i]['name']).remove();	
 	if (state[i]['type'] == "text") {
-  	    jQuery('#left-down').append("<div id=\"" + gid + "-" + state[i]['name'] + "\" parent-id=\"" + parentID + "\" class=\"form-group\" style=\"width: 200px\"><label>" + state[i]['name'] + "</label><input class=\"form-control input-sm\" type=\"text\" placeholder=\"text\" value=\"" + ((typeof state[i]['value'] !== 'undefined')?state[i]['value']:"") + "\"></form>");
+  	    jQuery('#left-down').append("<div id=\"" + gid + "-" + state[i]['name'] + "\" parent-id=\"" + parentID + "\" class=\"form-group\" style=\"width: 200px\"><label>" + state[i]['name'] + "</label><input class=\"form-control input-sm\" type=\"text\" placeholder=\"undefined\" value=\"" + ((typeof state[i]['value'] !== 'undefined')?state[i]['value']:"") + "\"></form>");
 	}
     }
 }
