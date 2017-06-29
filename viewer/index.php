@@ -111,7 +111,7 @@ if (isset($_GET['load'])) {
              </div>
              <div id="left-down"></div>
           </div>
-          <div id="right" class="col-md-10" style="overflow: hidden; position: absolute; left: 270px; top: 67px; bottom: 5px; right: -5px; overflow: scroll; z-index: 0; background: #313638; border: 1px solid gray;">
+          <div id="right" style="overflow: hidden; position: absolute; left: 270px; top: 67px; bottom: 5px; right: 10px; overflow: scroll; z-index: 0; background: #313638; border: 1px solid gray;">
           <svg id="right_svg" style="display: inline; width: 4000; height: 4000;" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
             <rect x="0" y="0" width="4000" height="4000" style="fill: #313638;"></rect>
             <g id="connects"></g>
