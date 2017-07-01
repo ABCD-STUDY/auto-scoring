@@ -95,5 +95,3 @@ Nodes that do not represent inputs our outputs to the recipe are simplier. They 
   module.exports = IfElse;
 ```
 At the first epoch the constructor will be called that can be used to specify a hidden state or memory of the node. At each iteration during an epoch the work function is called by the runner providing the current input and state values given the other connected nodes and their states. The computation in the work function of the node is expected to produce the outputs values as specified in the 'name' field of the node definition.
-
-A benefit of using a language where functions are first class citizen is that the value of the condition port of the If-Else can be a function returned by another node (i.e. smaller.js node).
