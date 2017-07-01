@@ -5,18 +5,25 @@
 var Filter = function (env) { };
 
 Filter.prototype.work = function (inputs, outputs, state) {
-    var obj = Object.keys(inputs);
-    for (var i = 0; i < obj.length; i++) {
-	if (typeof state['value'] !== 'undefined' && inputs[obj[i]] === state['value']) {
-	    var repl = "";
-	    if (typeof state['replacement'] !== 'undefined') {
-		repl = state['replacement'];
-	    }
-	    outputs[obj[i]] = state['replacement'];
-	} else {
-	    outputs[obj[i]] = inputs[obj[i]];
+	var obj = Object.keys(inputs);
+	for (var i = 0; i < obj.length; i++) {
+		// we don't know which state has the value and which has the replacement
+		var repl = undefined;
+		var valu = undefined;
+		for (var j = 0; j < state.length; j++) {
+			if ( typeof state[j]['value'] === 'undefined' )
+				continue;
+			if (state[j]['name'] == "replacement")
+  			    repl = state[j]['value'];
+			if (state[j]['name'] == "value")
+  			    valu = state[j]['value'];
+		}
+		if (valu === inputs[obj[i]]) {
+			outputs[obj[i]] = repl;
+		} else {
+			outputs[obj[i]] = inputs[obj[i]];			
+		}
 	}
-    }
 };
 
 module.exports = Filter;

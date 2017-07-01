@@ -19,8 +19,8 @@ var RedcapGet = function (state) {
     this._waitingForData = true;
 
     // get the configuration for this node
-    //var tokens = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../../code/php/tokens.json'), 'utf8'));
-    var tokens = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../tokens.json'), 'utf8'));
+    var tokens = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../../code/php/tokens.json'), 'utf8'));
+    //var tokens = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../tokens.json'), 'utf8'));
 
     // we are called here the first time, work is called every time and done tells us if we done
     var queue = async.queue(function (st, callback) {
@@ -168,7 +168,7 @@ RedcapGet.prototype.work = function (inputs, outputs, state) {
         }
         entry = this._participants[0];
         this._nextEpoch = false;
-        console.log("pull a new participant: " + entry['id_redcap'] + ", " + entry['redcap_event_name'] + " (" + this._participants.length + ")");
+        //console.log("pull a new participant: " + entry['id_redcap'] + ", " + entry['redcap_event_name'] + " (" + this._participants.length + ")");
     }
     var pGUID = entry['id_redcap'];
     var redcap_event_name = entry['redcap_event_name'];

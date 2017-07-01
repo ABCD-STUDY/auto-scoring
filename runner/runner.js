@@ -1,5 +1,7 @@
 #!/usr/bin/env nodejs
 
+//#!/usr/bin/env node
+
 // run this with:
 //   ./runner.js run -i ../viewer/recipes/FirstTest.json
 
@@ -27,6 +29,7 @@ var SmallerEqual = require("./smallerequal.js")
 var GreaterEqual = require("./greaterequal.js")
 var Maximum      = require("./maximum.js")
 var Minimum      = require("./minimum.js")
+var Filter       = require("./filter.js")
 
 var exportFileName = "";
 
@@ -190,13 +193,13 @@ function work(node, recipe) {
     var inputs = getInputValues(node, recipe);
     var enabled = getEnabledValue(node, recipe);
     if (!enabled) {
-        // if we are not enabled we should not have values in out state or output
+        // if we are not enabled we should not have values in our output (state is special because we need values in there)
         if (typeof node['outputs'] !== 'undefined')
             for (var i = 0; i < node['outputs'].length; i++)
                 delete node['outputs'][i]['value'];
-        if (typeof node['state'] !== 'undefined')
+        /*if (typeof node['state'] !== 'undefined')
            for (var i = 0; i < node['state'].length; i++)
-                delete node['state'][i]['value'];
+                delete node['state'][i]['value']; */
 
         return true; // don't do anything, this node is not enabled
     }
@@ -213,6 +216,8 @@ function work(node, recipe) {
             worker = new RedcapPut(node);
         } else if (node['id'] == 'not') {
             worker = new Not(recipe);
+        } else if (node['id'] == 'filter') {
+            worker = new Filter(recipe);
         } else if (node['id'] == 'mean') {
             worker = new Mean(recipe);
         } else if (node['id'] == 'equal') {
@@ -275,7 +280,7 @@ function work(node, recipe) {
         // what work is producing in outputs is an object with variable names that represent state variables values
         // these values need to be assigned to the output ports that correspond to the state variables
 
-        if (typeof worker.done !== 'undefined') {
+        if (done && typeof worker.done !== 'undefined') {
             done = done && worker.done();
         }
         // ok, now we have the outputs from this module, what do we do with those?
@@ -294,6 +299,7 @@ function work(node, recipe) {
                     if (node['state'][j]['value'] == outValNames[i]) { // tricky bit: the states value is the outputs key
                         // found the value of the internal variable, set this entries output connection value
                         node['outputs'][j]['value'] = outputs[outValNames[i]];
+                        break;
                     }
                 }
             } //else {
@@ -301,6 +307,7 @@ function work(node, recipe) {
                 for (var j = 0; j < node['outputs'].length; j++) {
                     if (node['outputs'][j]['name'] == outValNames[i]) {
                         node['outputs'][j]['value'] = outputs[outValNames[i]];
+                        break;
                     }
                 }
             //}
@@ -324,15 +331,27 @@ function run(recipe) {
     if (epoch == -1) {
         // no more data, stop here
         console.log("DONE DONE, epochs ended...");
+        // lets ask each module to cleanUp
+        for (var i = 0; i < recipe['nodes'].length; i++) {
+            var node = recipe['nodes'][i];
+            var gid = node['gid'];
+            if (typeof workers[gid] !== 'undefined') {
+                var worker = workers[gid]['worker'];
+                if (typeof worker.cleanUp !== 'undefined') {
+                    worker.cleanUp();
+                }
+            }
+        }
+
         return;
     }
     if (!somethingChanged) {
-        console.log("ADVANCE EPOCH");
         epoch = epoch + 1; // and try again with the next participant
+        //console.log("ADVANCE EPOCH to:" + epoch);
     }
     setTimeout(function () {
         run(recipe);
-    }, 10); // wait 100ms and check call yourself, in the meantime nodes have time to pull values from REDCap
+    }, 10); // wait minimum time period -- 4ms?, in the meantime nodes have time to pull values from REDCap
 
 }
 

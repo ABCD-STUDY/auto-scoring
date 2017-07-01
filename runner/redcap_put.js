@@ -5,6 +5,7 @@ var async = require("async");
 var request = require('request');
 var fs = require('fs');
 var path = require('path');
+//var json = require('json');
 
 
 var RedcapPut = function (n) {
@@ -12,6 +13,7 @@ var RedcapPut = function (n) {
     this._results = [];
     this._currentEpoch = 0;
     this._lastData = null;
+    this._batchSendSize = 100; // every 100 participants send something to REDCap
 };
 
 // return true if no more data can be generated
@@ -24,12 +26,127 @@ RedcapPut.prototype.epoch = function (epoch) {
     if (epoch !== this._currentEpoch) {
         this._currentEpoch = epoch;
         if (this._lastData !== null) {
-            console.log("save a participants data... " + this._lastData['id_redcap'] + " -> " + JSON.stringify(this._lastData));
+            console.log("save a participants data (epoch: " + epoch + ") ... " + this._lastData['id_redcap'] + " -> " + JSON.stringify(this._lastData));
             this.addResult(this._lastData); // save the last epochs results
+            this._lastData = null;
         }
     }
 
     return false; // we are not doneDone, only RedcapGet get tell us
+}
+
+function clone(obj) {
+    var copy;
+
+    // Handle the 3 simple types, and null or undefined
+    if (null == obj || "object" != typeof obj) return obj;
+
+    // Handle Date
+    if (obj instanceof Date) {
+        copy = new Date();
+        copy.setTime(obj.getTime());
+        return copy;
+    }
+
+    // Handle Array
+    if (obj instanceof Array) {
+        copy = [];
+        for (var i = 0, len = obj.length; i < len; i++) {
+            copy[i] = clone(obj[i]);
+        }
+        return copy;
+    }
+
+    // Handle Object
+    if (obj instanceof Object) {
+        copy = {};
+        for (var attr in obj) {
+            if (obj.hasOwnProperty(attr)) copy[attr] = clone(obj[attr]);
+        }
+        return copy;
+    }
+
+    throw new Error("Unable to copy obj! Its type isn't supported.");
+}
+
+// sends scores back to redcap
+function sendToREDCap( scores ) {
+    // we should send a batch of the scores to REDCap, remove those from the list that we have already
+    // sent out
+    // How to prevent too fast send operations? For now hope the program is slow enough...
+
+    var tokens = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../../code/php/mastertoken.json'), 'utf8'));
+    //var tokens = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../mastertoken.json'), 'utf8'));
+
+    var localScores = [];
+    // only send data that we have not send before
+    for (var i = 0; i < scores['scores'].length; i++) {
+        if (typeof scores['scores'][i]['_send_marker'] === 'undefined') {
+            localScores.push(clone(scores['scores'][i]));
+            scores['scores'][i]['_send_marker'] = 1;
+        }
+    }
+    if (localScores.length == 0) {
+        console.log("No more scores to send")
+    }
+
+    // we are called here the first time, work is called every time and done tells us if we done
+    var queue = async.queue(function (st, callback) {
+        var token  = st.token;
+        var self   = st.self;
+        var scores = st.scores;
+
+        var data  = {
+            'token': token,
+            'content': 'record',
+            'format': 'json',
+            'type': 'flat',
+            'overwriteBehavior': 'normal',
+            'data': JSON.stringify( scores ),
+            'returnContent': 'count',
+            'returnFormat': 'json'
+        };
+
+        var headers = {
+            'User-Agent': 'Super Agent/0.0.1',
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+
+        var url = "https://abcd-rc.ucsd.edu/redcap/api/";
+        request({
+            method: 'POST',
+            url: url,
+            form: data,
+            headers: headers,
+            json: true
+        }, function (error, response, body) {
+            if (error || response.statusCode !== 200) {
+                // error case
+                process.stdout.write("ERROR: could not get a response back from redcap " + error + " " + JSON.stringify(response) + "\n");
+                return;
+            }
+
+            callback();
+        });
+
+    }, 1); // Run one simultaneous download
+
+    // is called after all the values have been pulled
+    queue.drain = (function (self) {
+        return function() {
+            console.log("did send all participants to redcap ");
+        };
+    })(this);
+
+    var sites = Object.keys(tokens);
+    for (var i = 0; i < 1 /*sites.length*/; i++) {
+        var site = sites[i];
+        queue.push( { token: tokens[site], self: this, scores: localScores }, (function (site) {
+            return function (err) {
+                console.log("finished sending data");
+            };
+        })(site));
+    }
 }
 
 // cache the results before sending them off to someone
@@ -53,12 +170,20 @@ RedcapPut.prototype.addResult = function (r) {
     if (!found) {
         this._results.push(r);
     }
+    if ((this._results.length % this._batchSendSize) == 0) {
+        sendToREDCap( { scores: this._results } );
+    }
+}
+
+RedcapPut.prototype.cleanUp = function () {
+    // a change to print out results, or to send things off to someone else
+    sendToREDCap( { scores: this._results } );
+    console.log("Results after sending (" + this._results.length + "): \n" + JSON.stringify(this._results, null, '  '));
 }
 
 // We would like to cache the data we send to REDCap, that way we can limit the send operations in case something has been transferred already
 RedcapPut.prototype.work = function (inputs, outputs, state) {
 
-    // pull one of the participants out and get the requested values for that participant
     var data = {};
     var obj = Object.keys(inputs);
     for (var i = 0; i < obj.length; i++) {
@@ -89,7 +214,7 @@ RedcapPut.prototype.work = function (inputs, outputs, state) {
     }
     // every once in a while send the collated data to REDCap
     //if (this._results.length % 50 == 0) {
-        console.log("Results (" + this._results.length + "): \n" + JSON.stringify(this._results, null, '  '));
+        //console.log("Results (" + this._results.length + "): \n" + JSON.stringify(this._results, null, '  '));
     //}
 };
 
