@@ -42,11 +42,11 @@ Nodes can implement the following functions to react to signals from the runner.
 <dl>
   <dt>Constructor</dt>
   <dd>Called if the graph is instanciated. Example
-```
+<code>
 var Not = function () {
     this._condition = function(a) { return !(a); };
 };
-```
+</code>
 </dd>
 
 </dl>
