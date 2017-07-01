@@ -21,7 +21,7 @@ Not.prototype.work = function (inputs, outputs, state) {
 module.exports = Not;
 ```
 The node module needs to be imported in runner.js and must be part of the runner's work function switch statement. Together with this node implementation in the runner directory the viewer also needs to define the corresponding user interface in its items.json file:
-```
+```json
 {
   "name": "not",
   "id": "not",
@@ -40,14 +40,28 @@ The node module needs to be imported in runner.js and must be part of the runner
 
 Nodes can implement the following functions to react to signals from the runner.
 
-<dl>
-  <dt>Constructor</dt>
-  <dd>Called if the graph is instanciated. Example
-<code>
-var Not = function () {<br/>
-    this._condition = function(a) { return !(a); };<br>
+#### Constructor
+```
+ [Named function]
+```
+Called once if the graph is created. Use this place to perform initialization of your modules. The REDCap_get module for example uses this location to start all the data pull operations. Here the much simplier example of the not-node that just creates a comparison functionn as an internal variable:
+```javascript
+var Not = function () {
+    this._condition = function(a) { return !(a); };
 };
-</code>
-</dd>
+```
 
-</dl>
+### Destructor
+```
+ [cleanUp() added to prototype]
+```
+Called if the runner decides that no more work can be done. Use this function if your node needs to clean-up after itself. The REDCap_put node for example uses this call to send the last remaining scores back to the database.
+```javascript
+RedcapPut.prototype.cleanUp = function () {
+    sendToREDCap( { scores: this._results } );
+    console.log("Results after sending (" +
+    	        this._results.length +
+		"): \n" +
+		JSON.stringify(this._results, null, '  '));
+}
+```
