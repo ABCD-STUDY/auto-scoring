@@ -22,16 +22,17 @@ module.exports = Not;
 ```
 The node module needs to be imported in runner.js and must be part of the runner's work function switch statement. Together with this node implementation in the runner directory the viewer also needs to define the corresponding user interface in its items.json file:
 ```
-{   "name": "not",
-	"id": "not",
-	"group": "Logic",
-	"description": "Logic Expression - Not",
-	"inputs": [
-	    { "name": "in", "type": "all" }
-	],
-	"outputs": [
-	    { "name": "out", "type": "all" }
-	]
+{
+  "name": "not",
+  "id": "not",
+  "group": "Logic",
+  "description": "Logic Expression - Not",
+  "inputs": [
+      { "name": "in", "type": "all" }
+  ],
+  "outputs": [
+      { "name": "out", "type": "all" }
+  ]
 },
 ```
 
@@ -43,8 +44,8 @@ Nodes can implement the following functions to react to signals from the runner.
   <dt>Constructor</dt>
   <dd>Called if the graph is instanciated. Example
 <code>
-var Not = function () {
-    this._condition = function(a) { return !(a); };
+var Not = function () {<br/>
+    this._condition = function(a) { return !(a); };<br>
 };
 </code>
 </dd>
