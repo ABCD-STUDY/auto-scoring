@@ -10,7 +10,7 @@ The runner will execute the graph in stages. Each stage or epoch processes one s
 
 The runner signals different processing requests to the nodes by calling named functions in each node's code. The different functions names create the node API supported by this runner. Here an example for the simplest of all nodes that implements logical not:
 ```
-var Not = function () {
+var Not = function () { // constructor
     this._condition = function(a) { return !(a); };
 };
 
@@ -18,12 +18,12 @@ Not.prototype.work = function (inputs, outputs, state) {
     outputs['out'] = this._condition;
 };
 
-module.exports = Not;
+module.exports = Not;   // is imported by runner.js
 ```
-Its essential to create the return function in the constructor of Not. If we would create the function in work it would be a different function every time the work() function is called. In that case the runner would assume that the node did some work even it it did not. Make sure to keep the outputs stable - the same - in different iterations of the graph if you are done with the work.
+Its essential to create the return function in the constructor of Not. If we would create the function in work it would be a different function every time the work() function is called. In that case the runner would assume that the node did some work even it it did not. Make sure to keep the outputs stable - the same - in different iterations of the graph if you are done with the work. In this case not was born being ready.
 
-The node module needs to be imported in runner.js and must be part of the runner's work function switch statement. Together with this node implementation in the runner directory the viewer also needs to define the corresponding user interface in its items.json file:
-```json
+The node module needs to be imported in runner.js and must be part of the runner's work function switch statement. Together with this node implementation in the runner directory the viewer also needs to define the corresponding user interface in its items.json file section:
+```JSON
 {
   "name": "not",
   "id": "not",
