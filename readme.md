@@ -17,7 +17,7 @@ Generally data flows from left to right through "connections" between "nodes". E
 Drag- and drop a node from the list on the left to the canvas to instantiate the node. Drag- and drop using the gray port circles on each node to create a connection. Select a node to get a list of the internal state variables on the left.
 
 The interface of each node is defined in the items.json file. Here an example of one nodes specification:
-```
+```JSON
 {
     "name": "If-Else",
     "id": "if-else",
@@ -57,7 +57,7 @@ If a node fetches or saves data to and from the graph it needs to defines an epo
 Epoch information is also used by the output node redcap_put.js. This node caches the calculated values from the end of the last epoch to prevent partially calculated values during the non-deterministic execution of the graph. No special care is taken currently to prevent cycles in the graph. They can be created and will result in an endless loop.
 
 Nodes that do not represent inputs our outputs to the recipe are simplier. They only observe their input and output dictionaries, possibly utilizing the state variables. Here an example of the implementation of the If-Else node:
-```
+```javascript
   var IfElse = function () { }; // constructor
 
   // compute				  
