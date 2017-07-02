@@ -512,7 +512,7 @@ function fillItems() {
 
 // react to state value changes
 function setupStateValues() {
-    jQuery('#left-down').on('change', 'input', function(a) {
+    jQuery('#left-down').on('change', '.state-input', function(a) {
 	var stateVariable = jQuery(this).parent().find('label').text();
 	var newValue = jQuery(a.target).val();
 	var parentID = jQuery(a.target).parent().attr('parent-id');
@@ -559,7 +559,15 @@ function addStateDisplay( state ) {
 	// remove any existing displays
 	jQuery('#'+ gid + '-' + state[i]['name']).remove();	
 	if (state[i]['type'] == "text") {
-  	    jQuery('#left-down').append("<div id=\"" + gid + "-" + state[i]['name'] + "\" parent-id=\"" + parentID + "\" class=\"form-group\" style=\"width: 200px\"><label>" + state[i]['name'] + "</label><input class=\"form-control input-sm\" type=\"text\" placeholder=\"undefined\" value=\"" + ((typeof state[i]['value'] !== 'undefined')?state[i]['value']:"") + "\"></form>");
+  	    jQuery('#left-down').append("<div id=\"" + gid + "-" + state[i]['name'] + "\" parent-id=\"" + parentID + "\" class=\"form-group\" style=\"width: 200px\"><label>" + state[i]['name'] + "</label><input class=\"form-control input-sm state-input\" type=\"text\" placeholder=\"undefined\" value=\"" + ((typeof state[i]['value'] !== 'undefined')?state[i]['value']:"") + "\"></div>");
+	} else if (state[i]['type'] == "textarea") {
+  	    jQuery('#left-down').append("<div id=\"" + gid + "-" + state[i]['name'] +
+					"\" parent-id=\"" + parentID + "\" class=\"form-group\" style=\"width: 200px\"><label>" +
+					state[i]['name'] +
+					"</label><textarea class=\"form-control input-sm state-input\" type=\"textarea\" rows=\"5\" " +
+					"placeholder=\"undefined\" value=\"" +
+					((typeof state[i]['value'] !== 'undefined')?state[i]['value']:"") + "\"></textarea></div>");
+
 	}
     }
 }

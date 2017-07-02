@@ -30,6 +30,7 @@ var GreaterEqual = require("./nodes/greaterequal.js")
 var Maximum      = require("./nodes/maximum.js")
 var Minimum      = require("./nodes/minimum.js")
 var Filter       = require("./nodes/filter.js")
+var TScorer      = require("./nodes/t-score.js")
 
 var exportFileName = "";
 
