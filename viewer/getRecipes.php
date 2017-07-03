@@ -1,4 +1,15 @@
 <?php
+session_start();
+
+include($_SERVER["DOCUMENT_ROOT"]."/code/php/AC.php");
+$user_name = check_logged(); /// function checks if visitor is logged.
+$admin = false;
+
+if ($user_name == "") {
+    return;
+}
+
+$permissions = list_permissions_for_user( $user_name );
 
 $action = "";
 if (isset($_GET['action'])) {
@@ -15,6 +26,11 @@ if (isset($_POST['state'])) {
 }
 
 if ($action == "save") {
+    if (!in_array("can-auto-score",$permissions)) {
+        echo("{ \"message\": \"permissions denied\" }");
+        return;
+    }
+    
     // save the state
     echo ("got save action with: \"".$name . "\" and values: " .json_encode($state));
     if ($name !== "" && $state !== "") {
@@ -23,6 +39,11 @@ if ($action == "save") {
     }
     return;
 } elseif ($action == "saveImage") {
+    if (!in_array("can-auto-score",$permissions)) {
+        echo("{ \"message\": \"permissions denied\" }");
+        return;
+    }
+
     if ($name !== "") {
         if (isset($_POST['imageData'])) {
             $imageData = urldecode($_POST['imageData']);
@@ -33,6 +54,11 @@ if ($action == "save") {
         }
     }
 } elseif ($action == "delete") {
+    if (!in_array("can-auto-score",$permissions)) {
+        echo("{ \"message\": \"permissions denied\" }");
+        return;
+    }
+
     if (is_file("recipes/".$name.".json")) {
         unlink("recipes/".$name.".json");
         unlink("recipes/".$name.".png");
@@ -41,6 +67,10 @@ if ($action == "save") {
         echo("{ \"message\": \"File could not be deleted.\" }");
     }
 } else {
+    if (!in_array("can-view-auto-score",$permissions) && !in_array("can-auto-score",$permissions)) {
+        echo("{ \"message\": \"permissions denied\" }");
+        return;
+    }
 
     $files = glob('recipes/*.json');
     $res = array();

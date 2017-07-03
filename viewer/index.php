@@ -114,11 +114,18 @@ if (isset($_GET['load'])) {
           </div>
           <div id="right" style="overflow: hidden; position: absolute; left: 270px; top: 67px; bottom: 5px; right: 10px; overflow: scroll; z-index: 0; background: #313638; border: 1px solid gray;">
           <svg id="right_svg" style="display: inline; width: 4000; height: 4000;" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
-            <rect x="0" y="0" width="4000" height="4000" style="fill: #313638;"></rect>
-            <g id="connects"></g>
+             <defs>
+                <filter id="f1" x="0" y="0" width="200%" height="200%">
+                  <feOffset result="offOut" in="SourceAlpha" dx="2" dy="2" />
+                  <feGaussianBlur result="blurOut" in="offOut" stdDeviation="3" />
+                  <feBlend in="SourceGraphic" in2="blurOut" mode="normal" />
+                </filter>
+             </defs>
+             <rect x="0" y="0" width="4000" height="4000" style="fill: #313638;"></rect>
+             <g id="connects"></g>
           </svg>
-       </div>
-     </div>
+      </div>
+    </div>
       
      <div class="modal fade" role="dialog" id="save-recipe-dialog">
        <div class="modal-dialog">

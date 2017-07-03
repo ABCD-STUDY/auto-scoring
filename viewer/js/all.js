@@ -48,6 +48,7 @@ function createGraphicForItem( item, pos ) {
     var g = jQuery(SVG('g'))
 	.attr('transform', 'translate(' + pos.left + ',' + pos.top + ')')
         .attr('gid', id)
+        .attr('filter', 'url(#f1)')
         .attr('class', 'movable draggable');
     var b = jQuery(SVG('rect'))
 	.attr('y', 0)
@@ -619,6 +620,7 @@ function createConnections() {
 	str = str + "M" + Math.round(x1) + " " + Math.round(y1) + "C " + Math.round(x1 + (connections[i]['source-side'] == "left"? -dist:dist)) + " " + Math.round(y1) + ", " +
             Math.round(x2 + (connections[i]['target-side'] == "left"?-dist:dist)) + " " + Math.round(y2) + ", " + Math.round(x2) + " " + Math.round(y2);
 	var p = jQuery(SVG('path'))
+            .attr('filter', 'url(#f1)')
 	    .attr('fill', 'none')
 	    .attr('stroke', 'gray')
 	    .attr('stroke-width', 0.6)
@@ -628,6 +630,7 @@ function createConnections() {
 
 	var marker = jQuery(SVG('circle'))
 	    .attr('class', 'marker')
+            .attr('filter', 'url(#f1)')
 	    .attr('r',1)
 	    .attr('cx', 0)
 	    .attr('cy', 0)
