@@ -184,7 +184,7 @@ function createGraphicForItem( item, pos ) {
 	var cir = jQuery(SVG('circle'))
 	    .attr('r', 4)
 	    .attr('cx', 5)
-	    .attr('fill', '#aaa')
+	    .attr('fill', 'rgba(200,200,200,.6)')
 	    .attr('class', 'connectable')
 	    .attr('cy', 30+i*14 - 3);
 	var arrowg = jQuery(SVG('g'))
@@ -194,10 +194,10 @@ function createGraphicForItem( item, pos ) {
 	    .attr('fill', 'none');
 	var arrow = jQuery(SVG('path'))
 	    .attr('d', 'M16.818,7.646 L10.878,2.206 C10.644,1.992 10.264,1.993 10.029,2.208 L10.024,6.001 L2,6.001 C1.447,6.001 1,6.448 1,7.001 L1,9.001 C1,9.554 1.447,10.001 2,10.001 L10.019,10.001 L10.013,13.878 C10.245,14.091 10.626,14.09 10.862,13.875 L16.816,8.423 C17.049,8.206 17.052,7.859 16.818,7.646 L16.818,7.646 Z')
-	    .attr('fill','#888');
+	    .attr('fill','#EEE');
 	jQuery(arrowg).append(arrow);
-	jQuery(g2).append(cir);
 	jQuery(g2).append(arrowg);
+	jQuery(g2).append(cir);
 	jQuery(tt).append(item['inputs'][i]['name']);
 	jQuery(g2).append(tt);
 	jQuery(g).append(g2);
@@ -231,7 +231,7 @@ function createGraphicForItem( item, pos ) {
 	var cir = jQuery(SVG('circle'))
 	    .attr('r', 4)
 	    .attr('class', 'connectable')
-	    .attr('fill', '#aaa')
+	    .attr('fill', 'rgba(200,200,200,.6)')
 	    .attr('cx', w-5)
 	    .attr('cy', 30+i*14 - 3);
 	var arrowg = jQuery(SVG('g'))
@@ -241,10 +241,10 @@ function createGraphicForItem( item, pos ) {
 	    .attr('fill', 'none');
 	var arrow = jQuery(SVG('path'))
 	    .attr('d', 'M16.818,7.646 L10.878,2.206 C10.644,1.992 10.264,1.993 10.029,2.208 L10.024,6.001 L2,6.001 C1.447,6.001 1,6.448 1,7.001 L1,9.001 C1,9.554 1.447,10.001 2,10.001 L10.019,10.001 L10.013,13.878 C10.245,14.091 10.626,14.09 10.862,13.875 L16.816,8.423 C17.049,8.206 17.052,7.859 16.818,7.646 L16.818,7.646 Z')
-	    .attr('fill','#888');
+	    .attr('fill','#EEE');
 	jQuery(arrowg).append(arrow);
-	jQuery(g2).append(cir);
 	jQuery(g2).append(arrowg);
+	jQuery(g2).append(cir);
 	jQuery(tt).append(item['outputs'][i]['name']);
 	jQuery(g2).append(tt);
 	jQuery(g).append(g2);
@@ -620,17 +620,16 @@ function createConnections() {
 	str = str + "M" + Math.round(x1) + " " + Math.round(y1) + "C " + Math.round(x1 + (connections[i]['source-side'] == "left"? -dist:dist)) + " " + Math.round(y1) + ", " +
             Math.round(x2 + (connections[i]['target-side'] == "left"?-dist:dist)) + " " + Math.round(y2) + ", " + Math.round(x2) + " " + Math.round(y2);
 	var p = jQuery(SVG('path'))
-            .attr('filter', 'url(#f1)')
+//            .attr('filter', 'url(#f1)')
 	    .attr('fill', 'none')
 	    .attr('stroke', 'gray')
-	    .attr('stroke-width', 0.6)
+	    .attr('stroke-width', 0.8)
 	    .attr('cid', id)
 	    .attr('d', str);
 	jQuery('#connects').append(p);
 
 	var marker = jQuery(SVG('circle'))
 	    .attr('class', 'marker')
-            .attr('filter', 'url(#f1)')
 	    .attr('r',1)
 	    .attr('cx', 0)
 	    .attr('cy', 0)

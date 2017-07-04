@@ -64,14 +64,16 @@
 	    { "name": "in2", "type": "constant-text", "many": "yes" },
 	    { "name": "in3", "type": "constant-text", "many": "yes" },
 	    { "name": "in4", "type": "constant-text", "many": "yes" },
-	    { "name": "in5", "type": "constant-text", "many": "yes" }
+	    { "name": "in5", "type": "constant-text", "many": "yes" },
+	    { "name": "in6", "type": "constant-text", "many": "yes" }
 	],
 	"state": [
 	    { "name": "item1", "type": "text", "many": "yes" },
 	    { "name": "item2", "type": "text", "many": "yes" },
 	    { "name": "item3", "type": "text", "many": "yes" },
 	    { "name": "item4", "type": "text", "many": "yes" },
-	    { "name": "item5", "type": "text", "many": "yes" }
+	    { "name": "item5", "type": "text", "many": "yes" },
+	    { "name": "item6", "type": "text", "many": "yes" }
 	]
     },
     { 

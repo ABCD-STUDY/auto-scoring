@@ -19,13 +19,14 @@ var RedcapGet = function (state) {
     this._waitingForData = true;
 
     // get the configuration for this node
-    var tokens = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../../code/php/tokens.json'), 'utf8'));
+    var tokens = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../../../code/php/tokens.json'), 'utf8'));
     //var tokens = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../tokens.json'), 'utf8'));
 
     // we are called here the first time, work is called every time and done tells us if we done
     var queue = async.queue(function (st, callback) {
         var token = st.token;
         var self  = st.self;
+	var site  = st.site;
         var data  = {
             'token': token,
             'content': 'record',
@@ -47,7 +48,7 @@ var RedcapGet = function (state) {
         for (var i = 0; i < self._state.length; i++) {
             if (typeof self._state[i]['value'] === 'undefined')
                 continue;
-            if (self._state[i]['value'] == 'id_redcap' || self._state[i]['value'] == 'redcap_event_name')
+            if (self._state[i]['value'] == 'id_redcap' || self._state[i]['value'] == 'redcap_event_name' || self._state[i]['value'] == 'redcap_data_access_group')
                 continue;
 
             var val = self._state[i]['value'];
@@ -113,7 +114,7 @@ var RedcapGet = function (state) {
         if (site == "OAHU") {
             continue;
         }
-        queue.push( { token: tokens[site], self: this }, (function (site) {
+        queue.push( { token: tokens[site], self: this, site: site }, (function (site) {
             return function (err) {
                 console.log("finished getting data for site: " + site + " num participants is:" + this.data.self._participants.length);
                 this._numCalls = this._numCalls - 1; // one less call to wait for

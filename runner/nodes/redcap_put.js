@@ -13,7 +13,7 @@ var RedcapPut = function (n) {
     this._results = [];
     this._currentEpoch = 0;
     this._lastData = null;
-    this._batchSendSize = 100; // every 100 participants send something to REDCap
+    this._batchSendSize = 20; // every 100 participants send something to REDCap
 };
 
 // return true if no more data can be generated
@@ -75,29 +75,60 @@ function sendToREDCap( scores ) {
     // sent out
     // How to prevent too fast send operations? For now hope the program is slow enough...
 
-    var tokens = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../../code/php/mastertoken.json'), 'utf8'));
+    var tokens = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../../../code/php/tokens.json'), 'utf8'));
+    //var tokens = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../../../code/php/mastertoken.json'), 'utf8'));
     //var tokens = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../mastertoken.json'), 'utf8'));
 
-    var localScores = [];
+    var localScores = {}; // send by site and event to be able to use the normal tokens and limit error messages
     // only send data that we have not send before
     for (var i = 0; i < scores['scores'].length; i++) {
+	if (typeof scores['scores'][i]['redcap_data_access_group'] === 'undefined') {
+	    console.log("ERROR: no redcap_data_access_group available in imported data");
+	}
+	var site  = scores['scores'][i]['redcap_data_access_group'];
+	var event = scores['scores'][i]['redcap_event_name'];	
         if (typeof scores['scores'][i]['_send_marker'] === 'undefined') {
-            localScores.push(clone(scores['scores'][i]));
+	    var tmp = clone(scores['scores'][i]);
+	    // lets test if converting the results to strings makes a difference to REDCap
+	    var keys = Object.keys(tmp);
+	    for (var j = 0; j < keys.length; j++) {
+		tmp[keys[j]] = '' + tmp[keys[j]]; // convert to string;
+	    }
+	    if (typeof tmp['redcap_data_access_group'] !== 'undefined') {
+   		delete tmp['redcap_data_access_group'];
+	    }
+	    if (typeof localScores[site] === 'undefined') {
+		localScores[site] = {};
+	    }
+	    if (typeof localScores[site][event] === 'undefined') {
+		localScores[site][event] = [];
+	    }
+            localScores[site][event].push(tmp);
             scores['scores'][i]['_send_marker'] = 1;
         }
     }
-    if (localScores.length == 0) {
+    var sites = Object.keys(localScores);
+    var numScores = 0;
+    for (var i = 0; i < sites.length; i++) {
+	var events = Object.keys(localScores[sites[i]]);
+	for (var j = 0; j < events.length; j++) {
+	    numScores = numScores + localScores[sites[i]][events[j]].length;
+	}
+    }
+    if (numScores == 0) {
         console.log("No more scores to send")
     }
+    //console.log("Send over:\n" + JSON.stringify(localScores, null, '  '));
 
     // we are called here the first time, work is called every time and done tells us if we done
     var queue = async.queue(function (st, callback) {
-        var token  = st.token;
+        var token  = st.tokens;
         var self   = st.self;
+	var site   = st.site;
         var scores = st.scores;
 
         var data  = {
-            'token': token,
+            'token': tokens[site],
             'content': 'record',
             'format': 'json',
             'type': 'flat',
@@ -122,12 +153,12 @@ function sendToREDCap( scores ) {
         }, function (error, response, body) {
             if (error || response.statusCode !== 200) {
                 // error case
-                process.stdout.write("ERROR: could not get a response back from redcap " + error + " " + JSON.stringify(response) + "\n");
-                return;
-            }
-
-            callback();
-        });
+                process.stdout.write("Error sending data (REDCap): \"" + error + "\", response:\n" + JSON.stringify(response) + "\n");
+            } 
+        }).on('response', function(response) {
+	    console.log("WORKING, submitted:\n" + JSON.stringify(response));
+	    callback();
+	});
 
     }, 1); // Run one simultaneous download
 
@@ -138,14 +169,17 @@ function sendToREDCap( scores ) {
         };
     })(this);
 
-    var sites = Object.keys(tokens);
-    for (var i = 0; i < 1 /*sites.length*/; i++) {
+    var sites = Object.keys(localScores);
+    for (var i = 0; i < sites.length; i++) {
         var site = sites[i];
-        queue.push( { token: tokens[site], self: this, scores: localScores }, (function (site) {
-            return function (err) {
-                console.log("finished sending data");
-            };
-        })(site));
+	var events = Object.keys(localScores[sites[i]]);
+	for (var j = 0; j < events.length; j++) {
+            queue.push( { token: tokens, self: this, site: site, scores: localScores[site][events[j]] }, (function (site) {
+		return function (err) {
+                    console.log("Finished sending data for site " + site + "\n");
+		};
+            })(site));
+	}
     }
 }
 

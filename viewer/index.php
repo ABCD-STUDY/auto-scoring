@@ -120,8 +120,11 @@ if (isset($_GET['load'])) {
                   <feGaussianBlur result="blurOut" in="offOut" stdDeviation="3" />
                   <feBlend in="SourceGraphic" in2="blurOut" mode="normal" />
                 </filter>
+                <pattern id="basicPattern" x="0" y="0" width="200" height="200" patternUnits="userSpaceOnUse">
+                   <image href="images/paper.jpg" x="0" y="0" height="200" width="200"/>
+                </pattern>
              </defs>
-             <rect x="0" y="0" width="4000" height="4000" style="fill: #313638;"></rect>
+             <rect x="0" y="0" width="4000" height="4000" stroke="none" fill="url(#basicPattern)"></rect>
              <g id="connects"></g>
           </svg>
       </div>
