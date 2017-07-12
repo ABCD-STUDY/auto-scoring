@@ -147,7 +147,7 @@ function sendToREDCap( scores ) {
 
         // The penaly to calling request is that we have to wait here for .5 second
         // This wait will ensure that we don't flood redcap and bring it down using the API. 
-        var waitTill = new Date(new Date().getTime() + 20 * 1000);
+        var waitTill = new Date(new Date().getTime() + 10 * 1000);
         while (waitTill > new Date()) { }
         // a while wait ends
 
@@ -185,13 +185,18 @@ function sendToREDCap( scores ) {
         var num = 0;
         for (var j = 0; j < events.length; j++) {
             num = num + localScores[site][events[j]].length;
-            thisSiteData.push.apply(thisSiteData,localScores[site][events[j]]);
+            thisSiteData.push.apply(thisSiteData, localScores[site][events[j]]);
+            queue.push({ token: tokens, self: this, site: site, scores: localScores[site][events[j]] }, (function (site, num) {
+                return function (err) {
+                    console.log("Finished sending " + num + " data for site " + site);
+                };
+            })(site, num));
         }
-        queue.push({ token: tokens, self: this, site: site, scores: thisSiteData }, (function (site, num) {
+/*        queue.push({ token: tokens, self: this, site: site, scores: thisSiteData }, (function (site, num) {
             return function (err) {
                 console.log("Finished sending " + num + " data for site " + site);
             };
-        })(site, num));
+        })(site, num)); */
     }
 }
 

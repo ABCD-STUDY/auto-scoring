@@ -74,7 +74,8 @@ function getInputValues(n, recipe) {
 
                     // add to inputs
                     // for undefined this would indicate that a value was expected - but could not be set by the recipe at this point in time
-                    inputs[thisinputName] = value;
+                    if (typeof inputs[thisinputName] === 'undefined' || inputs[thisinputName] === undefined) // if we have more than one connection to this node we should use the last one that has a value not undefined
+                        inputs[thisinputName] = value;
                 }
             }
         }
