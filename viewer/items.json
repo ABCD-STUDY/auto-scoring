@@ -98,22 +98,26 @@
 	"id": "constant-text",
 	"group": "Input",
 	"description": "A single value as a string",
-	"inputs": [],
+	"inputs": [
+	    { "name": "in", "type": "text" }	    
+	],
 	"outputs": [
-	    { "name": "out", "type": "constant-text" }
+	    { "name": "out", "type": "text" }
 	],
 	"state": [
 	    { "name": "item", "type": "text", "many": "yes" }
-	]	
+	]
     },
     {
 	"name": "Constant Number",
 	"id": "constant-number",
 	"group": "Input",
 	"description": "A single value as a number",
-	"inputs": [],
+	"inputs": [
+	    { "name": "in", "type": "number" }
+	],
 	"outputs": [
-	    { "name": "out", "type": "constant-number" }
+	    { "name": "out", "type": "number" }
 	],
 	"state": [
 	    { "name": "item", "type": "text", "many": "yes" }

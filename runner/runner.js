@@ -183,6 +183,85 @@ function clone(obj) {
     throw new Error("Unable to copy obj! Its type isn't supported.");
 }
 
+// test all workers if all are ready for the next epoch,
+// a worker that is getting data from outside would return false for as long
+// as its still waiting for data to come in. Once a dataset is there it
+// would return true.
+// If a node does not implment this function we assume the node is born ready.
+function readyForEpoch(recipe) {
+    var ready = true;
+    for (var i = 0; i < recipe['nodes'].length; i++) {
+        var node = recipe['nodes'][i];
+        var gid = node['gid']; // this id is unique for each node - even if there are two of the same type
+        if (typeof workers[gid] !== 'undefined') {
+            var worker = workers[gid]['worker'];
+            if (typeof worker.readyForEpoch !== 'undefined') {
+                ready = ready && worker.readyForEpoch(epoch);
+            }
+        }
+    }
+    return ready;
+}
+
+// notify all nodes that a new epoch started
+function startEpoch(recipe) {
+    for (var i = 0; i < recipe['nodes'].length; i++) {
+        var node = recipe['nodes'][i];
+        var gid = node['gid']; // this id is unique for each node - even if there are two of the same type
+        if (typeof workers[gid] !== 'undefined') {
+            var worker = workers[gid]['worker'];
+            if (typeof worker.startEpoch !== 'undefined') {
+                worker.startEpoch();
+            }
+        }
+    }
+}
+
+// notify all nodes that the epoch is over
+// The nodes that save data can do this here. Nodes don't have to implement this function.
+function endEpoch(recipe) {
+    for (var i = 0; i < recipe['nodes'].length; i++) {
+        var node = recipe['nodes'][i];
+        var gid = node['gid']; // this id is unique for each node - even if there are two of the same type
+        if (typeof workers[gid] !== 'undefined') {
+            var worker = workers[gid]['worker'];
+            if (typeof worker.endEpoch !== 'undefined') {
+                worker.endEpoch();
+            }
+        }
+    }
+}
+
+// at the very end tell nodes to cleanUp after themselves
+function cleanUp(recipe) {
+    for (var i = 0; i < recipe['nodes'].length; i++) {
+        var node = recipe['nodes'][i];
+        var gid = node['gid']; // this id is unique for each node - even if there are two of the same type
+        var worker = workers[gid]['worker'];
+        if (typeof worker.cleanUp !== 'undefined') {
+            worker.cleanUp();
+        }
+    }
+}
+
+// ask each node if there is more work
+// Nodes should implement this if they provide data into the data flow. If this function is not implemented we
+// assume the node is done.
+function doneDone(recipe) {
+    var ready = true;
+    for (var i = 0; i < recipe['nodes'].length; i++) {
+        var node = recipe['nodes'][i];
+        var gid = node['gid']; // this id is unique for each node - even if there are two of the same type
+        if (typeof workers[gid] !== 'undefined') {
+            var worker = workers[gid]['worker'];
+            if (typeof worker.doneDone !== 'undefined') {
+                ready = ready && worker.doneDone();
+            }
+        }
+    }
+    return ready;
+}
+
 // cache all the worker objects to have local persistent worker memory
 var workers = {};
 
@@ -270,20 +349,20 @@ function work(node, recipe) {
         workers[gid]['outputs'] = clone(outputs);
         workers[gid]['state']   = clone(state);
 
-        if (typeof worker.epoch !== 'undefined') {
-            var doneDone = worker.epoch(epoch);
-            // do we know if an epoch is empty?
-            if (doneDone) { // there is no more work to do, stop here
-                epoch = -1; // indicate that there are no more epochs
-            }
-        }
+//        if (typeof worker.epoch !== 'undefined') {
+//            var doneDone = worker.epoch(epoch);
+//            // do we know if an epoch is empty?
+//            if (doneDone) { // there is no more work to do, stop here
+//                epoch = -1; // indicate that there are no more epochs
+//            }
+//        }
 
         // what work is producing in outputs is an object with variable names that represent state variables values
         // these values need to be assigned to the output ports that correspond to the state variables
 
-        if (done && typeof worker.done !== 'undefined') {
-            done = done && worker.done();
-        }
+//        if (done && typeof worker.done !== 'undefined') {
+//            done = done && worker.done();
+//        }
         // ok, now we have the outputs from this module, what do we do with those?
         // set the outputs values to the output ports of this module as values
 
@@ -317,23 +396,32 @@ function work(node, recipe) {
     return done;
 }
 
+
 var epoch = 0; // we have to wait for the graph to finish processing before we can use the next generated data item and start over
-var somethingChanged;
 function run(recipe) {
-    somethingChanged = false;
+    var somethingChanged = false;
     for (var i = 0; i < recipe['nodes'].length; i++) {
         var node = recipe['nodes'][i];
-        // we will call each node with the input for as long as they do something (compare new with old response)
+        // we will call each node with the input for as long as they do something (compare new with old responses)
         var done = work(node, recipe);
         if (!done) {
             somethingChanged = true;
         }
     }
-    if (epoch == -1) {
+    if ( !readyForEpoch(recipe) ) { // only if we are ready for this epoch look at somethingChanged to find out if we are done
+        somethingChanged = true; 
+    }
+    if (epoch == 0) { // is this too early?
+        //startEpoch(recipe);
+    }
+
+    if ( doneDone(recipe) ) { // everyone is done
+//      if (epoch == -1) {
         // no more data, stop here
         console.log("DONE DONE, epochs ended...");
         // lets ask each module to cleanUp
-        for (var i = 0; i < recipe['nodes'].length; i++) {
+        cleanUp(recipe);
+/*        for (var i = 0; i < recipe['nodes'].length; i++) {
             var node = recipe['nodes'][i];
             var gid = node['gid'];
             if (typeof workers[gid] !== 'undefined') {
@@ -342,13 +430,14 @@ function run(recipe) {
                     worker.cleanUp();
                 }
             }
-        }
+        } */
 
         return;
     }
     if (!somethingChanged) {
+        endEpoch(recipe);   // notify all nodes that an epoch ended so they can store the result
         epoch = epoch + 1; // and try again with the next participant
-        //console.log("ADVANCE EPOCH to:" + epoch);
+        startEpoch(recipe); // notify all nodes that a new epoch should start - wait with readyForEpoch to find out if we are ready to process
     }
     setTimeout(function () {
         run(recipe);
@@ -375,10 +464,7 @@ let runSetup = (file, options) => {
     var recipe = JSON.parse(fs.readFileSync(exportFileName, 'utf8'));
     console.log("  Found " + recipe['nodes'].length + " nodes and " + recipe['connections'].length + " connections.");
 
-    //setupEnvironment();
-
-    // We will always execute all nodes at the same time for as long as something was done
-    var somethingChanged = true;
+    // start processing loop
     run(recipe);
 }
 
