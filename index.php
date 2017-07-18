@@ -37,8 +37,14 @@
 $recipes = glob('viewer/recipes/*.json');
 echo('<script type="text/javascript"> recipes = [');
 foreach($recipes as $recipe) {
+    // read this recipe
+    $state = json_decode(file_get_contents($recipe),TRUE);
     $pathparts = pathinfo($recipe);
-    echo('"' . $pathparts['filename'] . '",');
+    $data = array( 'name' => $pathparts['filename'] );
+    if (isset($state['envelope'])) {
+        $data['envelope'] = $state['envelope'];
+    }
+    echo(json_encode($data).',');
 }
 echo(']; </script>');
 
@@ -119,7 +125,15 @@ echo(']; </script>');
   <script type="text/javascript">
       jQuery(document).ready(function() {
           for (var i = 0; i < recipes.length; i++) {
-              jQuery('#recipes').append('<div class="panel panel-default block" recipe="'+ recipes[i] + '"><div class="panel-heading">Recipe ' + i + "</div>" + '<div class="panel-body image_container">' + '<img class="image" src="viewer/recipes/' + recipes[i] + '.png"/>' + '<div class="edit-icon"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></div>' + '</div>' + '<div class="panel-footer">'+ recipes[i] +'</div>' +  '</div>');
+              d = '';
+              if (typeof recipes[i]['envelope'] !== 'undefined' && recipes[i]['envelope'].length > 0) {
+                  d = recipes[i]['envelope'][0]['lastSavedByUserName'];
+              }
+              dat = '';
+              if (typeof recipes[i]['envelope'] !== 'undefined' && recipes[i]['envelope'].length > 0) {
+                  dat = '[' + recipes[i]['envelope'][0]['lastSaveAtDate'].slice(0,10) + ']';
+              }
+              jQuery('#recipes').append('<div class="panel panel-default block" recipe="'+ recipes[i]['name'] + '"><div class="panel-heading"><span class="recipe-counter">Recipe ' + i + '</span><span class="recipe-date pull-right">'+ dat +'</span></div>' + '<div class="panel-body image_container">' + '<img class="image" src="viewer/recipes/' + recipes[i]['name'] + '.png"/>' + '<div class="edit-icon"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></div>' + '</div>' + '<div class="panel-footer"><span class="recipe-name">'+ recipes[i]['name'] +'</span><span class="recipe-user-name pull-right">' + d + '</span></div>' +  '</div>');
           }
       });
 

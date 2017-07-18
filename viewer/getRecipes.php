@@ -34,6 +34,19 @@ if ($action == "save") {
     // save the state
     echo ("got save action with: \"".$name . "\" and values: " .json_encode($state));
     if ($name !== "" && $state !== "") {
+        $envelope = array();
+        $envelope['lastSavedByUserName'] = $user_name;
+        $email = getEmailFromUserName( $user_name );
+        $envelope['lastSavedByUserEmail'] = $email;
+        $envelope['lastSaveAtDate']  = date(DATE_ATOM);
+        // get envelope from before
+        if (file_exists('recipes/' . $name . '.json')) {
+           $previousState = json_decode(file_get_contents('recipes/' . $name . '.json'),TRUE);
+           if (isset($previousState['envelope'])) {
+               $envelope = array_unshift( $previousState['envelope'], $envelope );
+           }
+        }
+        $state['envelope'] = array( $envelope );
         // now save the state
         file_put_contents('recipes/' . $name . '.json', json_encode($state));
     }
