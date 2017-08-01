@@ -106,7 +106,7 @@ RedcapGet.prototype.doneDone = function() {
 
 This function is called at the very beginning of an epoch. The two example nodes redcap_get and redcap_put do not implement this function. Instead they react to the end of an epoch (endEpoch) only.
 
-### endEpoch [ added to prototype ]
+#### endEpoch [ added to prototype ]
 
 This function is called at the end of every epoch. REDCap_get is using this function to advance to the next participant for processing.
 
@@ -116,7 +116,7 @@ RedcapGet.prototype.endEpoch = function () {
 }
 ```
 
-### readyForEpoch [ boolean = readyForEpch() added to prototype ]
+#### readyForEpoch [ boolean = readyForEpch() added to prototype ]
 
 This function is implemented by the REDCap_get input node and returns true as soon as the first dataset is ready for processing.
 
