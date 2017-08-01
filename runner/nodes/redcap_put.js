@@ -16,25 +16,6 @@ var RedcapPut = function (n) {
     this._batchSendSize = 100; // every 200 participants send something to REDCap
 };
 
-// return true if no more data can be generated
-RedcapPut.prototype.done = function () {
-    return true;
-}
-
-// for the current epoch always show the same participant's data (need time to process the graph)
-RedcapPut.prototype.epoch = function (epoch) {
-    if (epoch !== this._currentEpoch) {
-        this._currentEpoch = epoch;
-        if (this._lastData !== null) {
-            console.log("save a participants data (epoch: " + epoch + ") ... " + this._lastData['id_redcap'] + " -> " + JSON.stringify(this._lastData));
-            this.addResult(this._lastData); // save the last epochs results
-            this._lastData = null;
-        }
-    }
-
-    return false; // we are not doneDone, only RedcapGet get tell us
-}
-
 function clone(obj) {
     var copy;
 
@@ -117,7 +98,6 @@ function sendToREDCap( scores ) {
     if (numScores == 0) {
         console.log("No more scores to send")
     }
-    //console.log("Send over:\n" + JSON.stringify(localScores, null, '  '));
 
     // we are called here the first time, work is called every time and done tells us if we done
     var queue = async.queue(function (st, callback) {
@@ -192,11 +172,6 @@ function sendToREDCap( scores ) {
                 };
             })(site, num));
         }
-/*        queue.push({ token: tokens, self: this, site: site, scores: thisSiteData }, (function (site, num) {
-            return function (err) {
-                console.log("Finished sending " + num + " data for site " + site);
-            };
-        })(site, num)); */
     }
 }
 
@@ -259,8 +234,6 @@ RedcapPut.prototype.work = function (inputs, outputs, state) {
         }
         if (outputName !== "" && outputName !== undefined && typeof inputs[obj[i]] !== 'undefined' && inputs[obj[i]] !== undefined) {
             data[outputName] = inputs[obj[i]];
-        } else {
-            //console.log("Error: no state value found for  " + obj[i] + " variable in node: " + this._node['name']);
         }
     }
     // do we have something to send? (more than just the id_redcap and redcap_event_name)
@@ -271,14 +244,8 @@ RedcapPut.prototype.work = function (inputs, outputs, state) {
     } else {
         if (Object.keys(data).length > 3) {
             this._lastData = data;
-        } else {
-            //console.log("redcap_put: insufficient data, requires a value for REDCap, not just id_redcap and redcap_event_name");
         }
     }
-    // every once in a while send the collated data to REDCap
-    //if (this._results.length % 50 == 0) {
-        //console.log("Results (" + this._results.length + "): \n" + JSON.stringify(this._results, null, '  '));
-    //}
 };
 
 module.exports = RedcapPut;

@@ -130,11 +130,8 @@ var RedcapGet = function (state) {
     }
 };
 
-// gets a notification of a new epoch started
-RedcapGet.prototype.startEpoch = function () {
-    //this._nextEpoch = true;
-    // we should through away the current participant .. its done
-}
+// gets a notification if a new epoch started - not used for this node
+RedcapGet.prototype.startEpoch = function () { }
 
 RedcapGet.prototype.endEpoch = function () {
     this._participants.shift(); // get the next subject      
@@ -149,26 +146,6 @@ RedcapGet.prototype.doneDone = function () {
         return false; // still work to do in the next epoch
     }
     return true; // nothing more to do
-}
-
-
-// for the current epoch always show the same participant's data (need time to process the graph)
-RedcapGet.prototype.epoch = function (epoch) {
-    if (epoch !== this._currentEpoch) {
-        this._nextEpoch = true;  // provide the next participant's data
-        this._currentEpoch = epoch;
-    }
-    // only test this if we ever had a value, otherwise wait for the data to come in
-    if (this._numCalls > 0 || this._participants.length > 0) {
-        return false; // still work to do in the next epoch
-    }
-
-    return true; // we are doneDone, no more participants
-}
-
-RedcapGet.prototype.done = function() {
-    // indicate that there was a change if we are just waiting for data coming in
-    return !this._waitingForData;
 }
 
 // inputs and state are read only, outputs can be written
