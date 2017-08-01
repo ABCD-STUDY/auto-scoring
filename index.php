@@ -130,7 +130,7 @@ echo(']; </script>');
                   d = recipes[i]['envelope'][0]['lastSavedByUserName'];
               }
               dat = '';
-              if (typeof recipes[i]['envelope'] !== 'undefined' && recipes[i]['envelope'].length > 0) {
+              if (typeof recipes[i]['envelope'] !== 'undefined' && recipes[i]['envelope'].length > 0 && typeof recipes[i]['envelope'][0]['lastSaveAtDate'] !== 'undefined') {
                   dat = '[' + recipes[i]['envelope'][0]['lastSaveAtDate'].slice(0,10) + ']';
               }
               jQuery('#recipes').append('<div class="panel panel-default block" recipe="'+ recipes[i]['name'] + '"><div class="panel-heading"><span class="recipe-counter">Recipe ' + i + '</span><span class="recipe-date pull-right">'+ dat +'</span></div>' + '<div class="panel-body image_container">' + '<img class="image" src="viewer/recipes/' + recipes[i]['name'] + '.png"/>' + '<div class="edit-icon"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></div>' + '</div>' + '<div class="panel-footer"><span class="recipe-name">'+ recipes[i]['name'] +'</span><span class="recipe-user-name pull-right">' + d + '</span></div>' +  '</div>');
