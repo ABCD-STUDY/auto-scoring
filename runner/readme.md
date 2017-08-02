@@ -20,7 +20,7 @@ Not.prototype.work = function (inputs, outputs, state) {
 
 module.exports = Not;
 ```
-Its essential to create the return function in the constructor of Not. If we would create the function in work it would be a different function every time the work() function is called. In that case the runner would assume that the node did some work even it it did not. Make sure to keep the outputs stable - the same - in different iterations of the graph if you are done with the work.
+It is essential to create the return value (a function) in the constructor of Not. If we would create the return value in the function work it would be considered a different return value every time the work() function is called. In this case the runner would assume that the node did some work - even it it did not. As a result the runner would not be able to detect the end of an epoch which results in an infinite loop. Make sure to keep the outputs of your nodes stable - as in the same - in different iterations of the graph if you are done with the work.
 
 The node module needs to be imported in runner.js and must be part of the runner's work function switch statement. Together with this node implementation in the runner directory the viewer also needs to define the corresponding user interface in its items.json file:
 ```json
