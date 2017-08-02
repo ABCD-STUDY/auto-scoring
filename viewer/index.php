@@ -94,14 +94,15 @@ if (isset($_GET['load'])) {
     <div class="container-fluid">
       <div style="overflow: hidden;">
           <div id="left" style="position: absolute; margin: 0px; margin-left: 10px; left: 4px; top: 67px; bottom: 14px; width: 250px; z-index: 0; display: block; overflow-y: scroll; overflow-x: hidden;">
-             <div id="left-top" style="position: relative; height: 80px; overflow: hidden;">
+             <div id="left-top" style="position: relative; height: 100px; overflow: hidden;">
                   <div style="background: #313638;">
                     <div class="form-control" style="background: #313638; border: 0px; font-size: 2pt;">
-                        <button class="btn" id="save-new-recipe" data-toggle="modal" data-target="#save-recipe-dialog">Save As</button>
-                        <button class="btn" id="create-new-recipe">Clear</button>
-                        <button class="btn" id="delete-recipe">Delete</button>
+                        <button class="btn btn-interface" id="save-new-recipe" data-toggle="modal" data-target="#save-recipe-dialog">Save As</button>
+                        <button class="btn btn-interface" id="create-new-recipe">Clear</button>
+                        <button class="btn btn-interface" id="delete-recipe">Delete</button>
                     </div>
-                    <div class="form-control" style="background: #313638; border: 0px;">
+                    <div class="form-control" style="background: #313638; border: 0px; margin-top: -10px;">
+                         <label for="recipes-list">Load recipe</label>
                          <select id="recipes-list" class="select2" style="width: 100%; background: #313638;"> </select>
                     </div>
                   </div>
@@ -113,11 +114,21 @@ if (isset($_GET['load'])) {
           </div>
           <div id="right" style="overflow: hidden; position: absolute; left: 270px; top: 67px; bottom: 5px; right: 10px; overflow: scroll; z-index: 0; background: #313638; border: 1px solid gray;">
           <svg id="right_svg" style="display: inline; width: 4000; height: 4000;" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
-            <rect x="0" y="0" width="4000" height="4000" style="fill: #313638;"></rect>
-            <g id="connects"></g>
+             <defs>
+                <filter id="f1" x="0" y="0" width="200%" height="200%">
+                  <feOffset result="offOut" in="SourceAlpha" dx="2" dy="2" />
+                  <feGaussianBlur result="blurOut" in="offOut" stdDeviation="3" />
+                  <feBlend in="SourceGraphic" in2="blurOut" mode="normal" />
+                </filter>
+                <pattern id="basicPattern" x="0" y="0" width="200" height="200" patternUnits="userSpaceOnUse">
+                   <image href="images/paper.jpg" x="0" y="0" height="200" width="200"/>
+                </pattern>
+             </defs>
+             <rect x="0" y="0" width="4000" height="4000" stroke="none" fill="url(#basicPattern)"></rect>
+             <g id="connects"></g>
           </svg>
-       </div>
-     </div>
+      </div>
+    </div>
       
      <div class="modal fade" role="dialog" id="save-recipe-dialog">
        <div class="modal-dialog">

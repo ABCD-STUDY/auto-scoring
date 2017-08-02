@@ -19,13 +19,14 @@ var RedcapGet = function (state) {
     this._waitingForData = true;
 
     // get the configuration for this node
-    var tokens = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../../code/php/tokens.json'), 'utf8'));
-    //var tokens = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../tokens.json'), 'utf8'));
+    //var tokens = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../../../code/php/tokens.json'), 'utf8'));
+    var tokens = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../../tokens.json'), 'utf8'));
 
     // we are called here the first time, work is called every time and done tells us if we done
     var queue = async.queue(function (st, callback) {
         var token = st.token;
         var self  = st.self;
+	var site  = st.site;
         var data  = {
             'token': token,
             'content': 'record',
@@ -47,7 +48,7 @@ var RedcapGet = function (state) {
         for (var i = 0; i < self._state.length; i++) {
             if (typeof self._state[i]['value'] === 'undefined')
                 continue;
-            if (self._state[i]['value'] == 'id_redcap' || self._state[i]['value'] == 'redcap_event_name')
+            if (self._state[i]['value'] == 'id_redcap' || self._state[i]['value'] == 'redcap_event_name' || self._state[i]['value'] == 'redcap_data_access_group')
                 continue;
 
             var val = self._state[i]['value'];
@@ -65,6 +66,12 @@ var RedcapGet = function (state) {
             'User-Agent': 'Super Agent/0.0.1',
             'Content-Type': 'application/x-www-form-urlencoded'
         }
+
+        // The penaly to calling request is that we have to wait here for .5 second
+        // This wait will ensure that we don't flood redcap and bring it down using the API. 
+        var waitTill = new Date(new Date().getTime() + .5 * 1000);
+        while (waitTill > new Date()) { }
+        // a while wait ends
 
         var url = "https://abcd-rc.ucsd.edu/redcap/api/";
         request({
@@ -113,33 +120,32 @@ var RedcapGet = function (state) {
         if (site == "OAHU") {
             continue;
         }
-        queue.push( { token: tokens[site], self: this }, (function (site) {
+        queue.push( { token: tokens[site], self: this, site: site }, (function (site, self) {
             return function (err) {
                 console.log("finished getting data for site: " + site + " num participants is:" + this.data.self._participants.length);
-                this._numCalls = this._numCalls - 1; // one less call to wait for
+                self._numCalls = self._numCalls - 1; // one less call to wait for
             };
-        })(site));
+        })(site, this));
         this._numCalls = this._numCalls + 1;
     }
 };
 
-// for the current epoch always show the same participant's data (need time to process the graph)
-RedcapGet.prototype.epoch = function (epoch) {
-    if (epoch !== this._currentEpoch) {
-        this._nextEpoch = true;  // provide the next participant's data
-        this._currentEpoch = epoch;
-    }
-    // only test this if we ever had a value, otherwise wait for the data to come in
+// gets a notification if a new epoch started - not used for this node
+RedcapGet.prototype.startEpoch = function () { }
+
+RedcapGet.prototype.endEpoch = function () {
+    this._participants.shift(); // get the next subject      
+}
+
+RedcapGet.prototype.readyForEpoch = function () {
+    return !this._waitingForData;
+}
+
+RedcapGet.prototype.doneDone = function () {
     if (this._numCalls > 0 || this._participants.length > 0) {
         return false; // still work to do in the next epoch
     }
-
-    return true; // we are doneDone, no more participants
-}
-
-RedcapGet.prototype.done = function() {
-    // indicate that there was a change if we are just waiting for data coming in
-    return !this._waitingForData;
+    return true; // nothing more to do
 }
 
 // inputs and state are read only, outputs can be written
@@ -160,7 +166,7 @@ RedcapGet.prototype.work = function (inputs, outputs, state) {
     }
 
 
-    if (this._nextEpoch) {
+ /*   if (this._nextEpoch) {
         this._participants.shift(); // get the next subject
         if (this._participants.length < 1) {
             console.log("could not get any participants from REDCap, nothing to do here...");
@@ -169,7 +175,7 @@ RedcapGet.prototype.work = function (inputs, outputs, state) {
         entry = this._participants[0];
         this._nextEpoch = false;
         //console.log("pull a new participant: " + entry['id_redcap'] + ", " + entry['redcap_event_name'] + " (" + this._participants.length + ")");
-    }
+    } */
     var pGUID = entry['id_redcap'];
     var redcap_event_name = entry['redcap_event_name'];
 

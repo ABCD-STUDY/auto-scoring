@@ -4,13 +4,13 @@
   ./runner.js run -i ../viewer/recipes/FirstTest.json
 ```
 
-The runner will execute the graph in stages. Each stage or epoch processes one set of input data, in this case a participant ID, a visit or event name and a set of raw scores (numbers or strings). During the epoch the input values to the graph will be fixed and all nodes in the graph will be called in a random order until no change in the graph is detected. This finishes the current epoch and the next epoch is started with a new set of input data. The runner finishes of there is no more data to process.
+The runner will execute the graph in stages. Each stage or epoch processes one set of input data, in our project a participant ID, a visit or event name and a set of raw scores (numbers or strings). During the epoch the input values to the graph will be fixed and all nodes in the graph will be called in a random order until no change in the graph is detected. This finishes the current epoch and the next epoch is started with a new set of input data. The runner finishes of there is no more data to process.
 
 ### Implementing a new node
 
 The runner signals different processing requests to the nodes by calling named functions in each node's code. The different functions names create the node API supported by this runner. Here an example for the simplest of all nodes that implements logical not:
 ```
-var Not = function () {
+var Not = function () { // constructor
     this._condition = function(a) { return !(a); };
 };
 
@@ -18,12 +18,12 @@ Not.prototype.work = function (inputs, outputs, state) {
     outputs['out'] = this._condition;
 };
 
-module.exports = Not;
+module.exports = Not;   // is imported by runner.js
 ```
-It is essential to create the return value (a function) in the constructor of Not. If we would create the return value in the function work it would be considered a different return value every time the work() function is called. In this case the runner would assume that the node did some work - even it it did not. As a result the runner would not be able to detect the end of an epoch which results in an infinite loop. Make sure to keep the outputs of your nodes stable - as in the same - in different iterations of the graph if you are done with the work.
+It is essential to the function of this node to create the return function in the constructor. If the node would create the function in its 'work' call it would be a different function every time the function is called. The runner would assume that the node did some work (changes the return value) even it it did not. Make sure to keep the outputs of your node stable. They should not change in different iterations of the graph. In this case Not was born being done.
 
-The node module needs to be imported in runner.js and must be part of the runner's work function switch statement. Together with this node implementation in the runner directory the viewer also needs to define the corresponding user interface in its items.json file:
-```json
+The node module needs to be imported in runner.js and must be part of the runner's work function switch statement. Together with this node implementation in the runner directory the viewer also needs to define the corresponding user interface in its items.json file section:
+```JSON
 {
   "name": "not",
   "id": "not",
@@ -42,10 +42,8 @@ The node module needs to be imported in runner.js and must be part of the runner
 
 Nodes can implement the following functions to react to signals from the runner.
 
-#### Constructor
-```
- [Named function]
-```
+#### Constructor [Named function]
+
 Called once if the graph is created. Use this place to perform initialization of your modules. The REDCap_get module for example uses this location to start all the data pull operations. Here the much simplier example of the not-node that just creates a comparison functionn as an internal variable:
 ```javascript
 var Not = function () {
@@ -53,26 +51,20 @@ var Not = function () {
 };
 ```
 
-#### Destructor
-```
- [cleanUp() added to prototype]
-```
-Called if the runner decides that no more work can be done. Use this function if your node needs to clean-up after itself. The REDCap_put node for example uses this call to send the last remaining scores back to the database.
+#### Destructor [cleanUp() added to prototype]
+
+Called if the runner decides that no more work can be done (end of all epochs). Use this function if your node needs to do some clean-up after itself. The REDCap_put node for example uses this call to send the last remaining scores back to the database.
 ```javascript
 RedcapPut.prototype.cleanUp = function () {
     sendToREDCap( { scores: this._results } );
-    console.log("Results after sending (" +
-    	        this._results.length +
-		"): \n" +
+    console.log("Results after sending (" + this._results.length + "): \n" +
 		JSON.stringify(this._results, null, '  '));
 }
 ```
 
-#### Work
-```
- [work() added to prototype]
-```
-Called each time a computation is required. This function will get three arguments: `inputs, outputs, state`. Inputs is as a dictionary with keys that reference inputs from the items.json definition of this node and values that contain the current values generated by the connections to this node. Outputs is an empty dictionary that should be filled with named output values according to the items.json definition of this node. Here an example from the function calculating the mean over the connected inputs and the number of missing and the total number of values:
+#### Work [work() added to prototype]
+
+Called each time a computation is requested. This function will get three arguments: `inputs`, `outputs`, and `state`. Inputs is a dictionary with keys that reference inputs from the items.json definition and values that contain the current values generated by the connections to this node. Outputs is an empty dictionary that should be filled with named output values according to the items.json definition of this node. Here an example from the function calculating the mean over the connected inputs. The node also computes the number of missing and the total number of values as additional outputs.
 ```javascript
 Mean.prototype.work = function (inputs, outputs, state) {
     var sum = 0.0;
@@ -94,44 +86,42 @@ Mean.prototype.work = function (inputs, outputs, state) {
     outputs['num_total']   = obj.length;
 };
 ```
-The work-function above will not produce a key/value for the mean if no values are present. Nodes in general should not assume that specific inputs are present (keys can not exist in inputs). Nodes also need to test the existing keys values for 'undefined'.
+The work-function above will not produce a key/value for the mean if no values are present. Nodes in general should not assume that specific inputs are present (key might not exist in inputs dictionary). Nodes should also test the existing keys values for 'undefined'.
 
-The state array is structured as a more complex object and contains any state variables exposed on the user interface. The IF-Else node for example used the state variables to store default values for its inputs. If a connection exists any existing state variable will be ignored (overwritten) by the data coming through the connection from the connecting node. The REDCap_get and REDCap_put nodes use state variables to store the names of the variables that should be pulled and pushed from/to REDCap.  
+The state array is structured as a more complex object and contains state variables exposed on the user interface. The IF-Else node for example used the state variables to store default values for its inputs. If a connection exists any existing state variable will be ignored (overwritten) by the data coming through the connection from the connecting node. The REDCap_get and REDCap_put nodes use state variables to store the names of the variables that should be pulled and pushed from/to REDCap.  
 
-#### Done
-```
- [ boolean = done() added to prototype]
-```
-Only needs to be implemented for input or output nodes to the recipe. This function is called frequently by the runner to ask the node to indicate if there is more things it can do in this iteration. The REDCap_get node will return false if it is still waiting for data to arrive from REDCap.
+#### doneDone [ boolean = doneDone() added to prototype]
+
+Only needs to be implemented for input nodes to the recipe. This function is called frequently by the runner. The node can indicate in its return argument if there is more data to be processed. The REDCap_get node will return false if it is still waiting for data to arrive from REDCap or if there is still participant data in its internal buffer for processing.
 ```javascript
-RedcapGet.prototype.done = function() {
-    // indicate that there was a change if we are just waiting for data coming in
+RedcapGet.prototype.doneDone = function() {
+    if (this._numCalls > 0 || this._participants.length > 0) {
+            return false; // still work to do in the next epoch
+    }
+    return true; // nothing more to do		    
+}
+```
+
+#### startEpoch [ startEpoch() added to prototype]
+
+This function is called at the very beginning of an epoch. The two example nodes redcap_get and redcap_put do not implement this function. Instead they react to the end of an epoch (endEpoch) only.
+
+#### endEpoch [ added to prototype ]
+
+This function is called at the end of every epoch. REDCap_get is using this function to advance to the next participant for processing.
+
+```
+RedcapGet.prototype.endEpoch = function () {
+    this._participants.shift(); // get the next subject      
+}
+```
+
+#### readyForEpoch [ boolean = readyForEpch() added to prototype ]
+
+This function is implemented by the REDCap_get input node and returns true as soon as the first dataset is ready for processing.
+
+```
+RedcapGet.prototype.readyForEpoch = function () {
     return !this._waitingForData;
 }
 ```
-
-#### Epoch
-```
- [ boolean = epoch(int) added to prototype]
-```
-Only if you are an input or output node to the recipe you need to implement this function. It is called by the runner if no more changes in the recipe can be detected. The runner checks for changes by keeping a record of the inputs, outputs and state fields of each work()-call.
-
-The epoch function gets as an argument an integer that is the current epoch number. If the node stores this number in a node internal variable it can check if a new epoch was started by the calling runner.
-
-The epoch function of the node should return either `false` - if there is more data it could produce or 'true' if there is no more data it can generate. Here an example from the REDCap_get node:
-```javascript
-RedcapGet.prototype.epoch = function (epoch) {
-    if (epoch !== this._currentEpoch) {
-        this._nextEpoch = true;  // provide the next participant's data
-        this._currentEpoch = epoch;
-    }
-    if (this._numCalls > 0 || this._participants.length > 0) {
-        return false; // still work to do in the next epoch
-    }
-
-    return true; // we are doneDone, no more participants
-}
-```
-The implementation compares the provided epoch number with one stored from the previous call and stores the information in the indicator variable _nextEpoch. If there is more internal data, for example if there are still calls running to pull data (_numCalls) or if the internal data buffer _participants is not empty it will return 'false' to indicate that there is more work to be done in the next epoch.
-
-

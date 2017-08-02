@@ -17,7 +17,7 @@ Generally data flows from left to right through "connections" between "nodes". E
 Drag- and drop a node from the list on the left to the canvas to instantiate the node. Drag- and drop using the gray port circles on each node to create a connection. Select a node to get a list of the internal state variables on the left.
 
 The interface of each node is defined in the items.json file. Here an example of one nodes specification:
-```
+```JSON
 {
     "name": "If-Else",
     "id": "if-else",
@@ -50,14 +50,14 @@ Save and load graphs - or "recipes" from the select2 control on the top left of 
 
 The runner is a nodejs program that will run a recipe. Whereas the viewer is a very generic component that might be easily adjusted to different use cases the runner is specialized.
 
-In the context of this project sets of input values represent raw scores for participants that need to be processed and produce sets of output values that represent derived scores. The derived scores are added back to the database. The processing of a single set of input values is handeled in an 'epoch'. During the epoch all nodes of the graph are evaluated randomly until no change in any single nodes inputs, outputs or internal state variables is observed. This ends the epoch and in the next epoch another set of input variables is selected for processing. Epochs end if no more sets are available for processing.
+In the context of this project sets of input values represent raw scores for participants that need to be processed and produce sets of output values that represent derived scores. The derived scores are added back to the database. The processing of a single set of input values is handeled in an 'epoch'. During the epoch all nodes of the graph are evaluated randomly (default evaluation strategy) until no change in any single nodes inputs, outputs or internal state variables is observed. This ends the epoch. In the next epoch another set of input variables is selected for processing. Epochs end if no more sets are available for processing.
 
-If a node fetches or saves data to and from the graph it needs to defines an epoch() function receiving a single integer value (the epoch). Other processing nodes will not implement epoch(int) but solely depend on their input ports for processing. For example the redcap_get.js node will pull a list of participant scores from REDCap and listens to the epochs. Each single participants data is processed in one epoch. During that epoch the outputs of the redcap_get.js node are the values for the current participants raw scores.
+If a node fetches or saves data to and from the graph it should defines the epoch-interface functions. Other (stateless) processing nodes do not have to implement this interface and can depend on their input ports for processing. For example the redcap_get.js node will pull a list of participant scores from REDCap and needs to react to changes in epochs to switch from one dataset to the next. This way a single participants data is processed during one epoch. During that epoch the outputs of the redcap_get.js node should be the values for the current participants raw scores.
 
-Epoch information is also used by the output node redcap_put.js. This node caches the calculated values from the end of the last epoch to prevent partially calculated values during the non-deterministic execution of the graph. No special care is taken currently to prevent cycles in the graph. They can be created and will result in an endless loop.
+Epoch information is also used by the output node redcap_put.js. This node caches the calculated values from the end of the last epoch to prevent partially calculated values during the random execution of the graph. No special care is taken currently to prevent cycles in the graph. They can be created and might result in an endless loop if input, output, or internal state variables are changed.
 
-Nodes that do not represent inputs our outputs to the recipe are simplier. They only observe their input and output dictionaries, possibly utilizing the state variables. Here an example of the implementation of the If-Else node:
-```
+Nodes that do not represent inputs our outputs to the recipe are simplier. They only observe their input and output dictionaries, possibly utilizing state variables. Here an example of the implementation of the If-Else node:
+```javascript
   var IfElse = function () { }; // constructor
 
   // compute				  
@@ -95,5 +95,3 @@ Nodes that do not represent inputs our outputs to the recipe are simplier. They 
   module.exports = IfElse;
 ```
 At the first epoch the constructor will be called that can be used to specify a hidden state or memory of the node. At each iteration during an epoch the work function is called by the runner providing the current input and state values given the other connected nodes and their states. The computation in the work function of the node is expected to produce the outputs values as specified in the 'name' field of the node definition.
-
-A benefit of using a language where functions are first class citizen is that the value of the condition port of the If-Else can be a function returned by another node (i.e. smaller.js node).

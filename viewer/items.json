@@ -64,14 +64,16 @@
 	    { "name": "in2", "type": "constant-text", "many": "yes" },
 	    { "name": "in3", "type": "constant-text", "many": "yes" },
 	    { "name": "in4", "type": "constant-text", "many": "yes" },
-	    { "name": "in5", "type": "constant-text", "many": "yes" }
+	    { "name": "in5", "type": "constant-text", "many": "yes" },
+	    { "name": "in6", "type": "constant-text", "many": "yes" }
 	],
 	"state": [
 	    { "name": "item1", "type": "text", "many": "yes" },
 	    { "name": "item2", "type": "text", "many": "yes" },
 	    { "name": "item3", "type": "text", "many": "yes" },
 	    { "name": "item4", "type": "text", "many": "yes" },
-	    { "name": "item5", "type": "text", "many": "yes" }
+	    { "name": "item5", "type": "text", "many": "yes" },
+	    { "name": "item6", "type": "text", "many": "yes" }
 	]
     },
     { 
@@ -96,22 +98,26 @@
 	"id": "constant-text",
 	"group": "Input",
 	"description": "A single value as a string",
-	"inputs": [],
+	"inputs": [
+	    { "name": "in", "type": "text" }	    
+	],
 	"outputs": [
-	    { "name": "out", "type": "constant-text" }
+	    { "name": "out", "type": "text" }
 	],
 	"state": [
 	    { "name": "item", "type": "text", "many": "yes" }
-	]	
+	]
     },
     {
 	"name": "Constant Number",
 	"id": "constant-number",
 	"group": "Input",
 	"description": "A single value as a number",
-	"inputs": [],
+	"inputs": [
+	    { "name": "in", "type": "number" }
+	],
 	"outputs": [
-	    { "name": "out", "type": "constant-number" }
+	    { "name": "out", "type": "number" }
 	],
 	"state": [
 	    { "name": "item", "type": "text", "many": "yes" }
@@ -375,6 +381,21 @@
 	"state": [
 	    { "name": "a", "type": "text", "many": "yes" },
 	    { "name": "b", "type": "text", "many": "yes" }
+	]		
+    },
+    {
+	"name": "t-score",
+	"id": "t-score",
+	"group": "Arithmetic",
+	"description": "Map input value to t-score values",
+	"inputs": [
+	    { "name": "value1", "type": "all" }
+	],
+	"outputs": [
+	    { "name": "value1", "type": "all" }
+	],
+	"state": [
+	    { "name": "value", "type": "textarea" }
 	]		
     },
     {
