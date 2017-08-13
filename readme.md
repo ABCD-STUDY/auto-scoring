@@ -44,7 +44,7 @@ Nodes have two special visual elements at the top. The orange circle on the left
 
 There is currently no way to remove a connection between two ports. As a work-around remove the node on one end and add it again.
 
-Save and load graphs - or "recipes" from the select2 control on the top left of the page. Only Chrome is currently enabled to create a screenshot of the recipe if you save. Both the recipe and its picture are stored in the recipes/ folder of the viewer.
+Save and load graphs - or "recipes" from the select2 control on the top left of the page. Only Chrome browsers are currently able to create a screenshot of the recipe during the save operation. Both the recipe and its picture are stored in the recipes/ folder of the viewer sub-directory.
 
 ## Runner
 
