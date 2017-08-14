@@ -477,8 +477,8 @@ let runSetup = (file, options) => {
         params.push('s')
 
     if (options.history && options.history != "") {
-        console.log("Info: will write history information to " + options.historyFile);
-        historyFile = options.debug;
+        console.log("Info: will write history information to " + options.history);
+        historyFile = options.history;
     }
 
     if (options.steps && options.steps != "") {

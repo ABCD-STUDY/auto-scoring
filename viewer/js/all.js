@@ -679,6 +679,70 @@ function createCurrentGraph( rep ) {
     selectedElement = null;
 }
 
+var debCurrentKey = "";
+var debCurrentStep = -1;
+var debCurrentBuffer = [];
+function debForward() {
+    if (debCurrentStep === -1) {
+	// first time we would start by getting a key
+	jQuery.getJSON('debugger.php', { 'action': 'start' }, function(data) {
+	    debCurrentKey = data['key'];
+	    jQuery.getJSON('debugger.php',
+			   {
+		               'action': 'step',
+		               'key': debCurrentKey,
+		               'numSteps': 10,
+		               'recipe': jQuery('#recipes-list').val()
+	                   },
+			   function(data) {
+			       // fills in the current step buffer
+			       var buffer = JSON.parse(data['result']);
+			       for (var i = 0; i < buffer.length; i++) {
+				   debCurrentBuffer.push(buffer[i]);
+			       }
+			       debCurrentStep++;
+			       debShowStep();
+			   });
+	});
+	return;
+    }
+    if (debCurrentStep >= debCurrentBuffer.length) {
+	jQuery.getJSON('debugger.php',
+		       { 'action': 'step', 'key': debCurrentKey, 'numSteps': 10, 'recipe': jQuery('#recipes-list').val() },
+		       function(data) {
+			   console.log("got the following data: " +JSON.stringify(data));
+			   var buffer = JSON.parse(data['result']);
+			   for (var i = 0; i < buffer.length; i++) {
+			       debCurrentBuffer.push(buffer[i]);
+			   }
+		       });	
+    }
+    debCurrentStep++;
+    debShowStep();    
+}
+
+function debShowStep( ) {
+    // visualize the current step
+    console.log('show the current step information: ' + debCurrentStep + ' as ' + JSON.stringify(debCurrentBuffer[debCurrentStep]));
+}
+
+function debBackward() {
+    if (debCurrentStep <= 0) {
+	return; // done
+    }
+    debCurrentStep--;
+    debShowStep(d);
+}
+
+function debStop() {
+    jQuery.getJSON('debugger.php', { 'action': 'stop', 'key': debCurrentKey }, function(data) {
+	debCurrentBuffer = [];
+	jQuery('#debugging-tools').fadeOut();
+	debCurrentStep = -1;
+	debCurrentKey = "";
+    });	
+}
+
 function createScreenshot() {
     // get the screen shot of the current graph (might only work on Chrome)
     var svgString = new XMLSerializer().serializeToString(document.querySelector('svg'));
@@ -728,6 +792,25 @@ jQuery(document).ready(function() {
     fillItems();
     setupStateValues();
 
+    jQuery('#debugging-tools').hide();
+    jQuery('#start-debugging').on('click', function() {
+	// toggle debugging tools
+	if (jQuery('#debugging-tools').is(":visible") ) {
+	    jQuery('#debugging-tools').fadeOut();
+	} else {
+	    jQuery('#debugging-tools').fadeIn();
+	}
+    });
+    jQuery('#debugging-step-forward').on('click', function() {
+	debForward();
+    });
+    jQuery('#debugging-step-backward').on('click', function() {
+	debBackward();	
+    });
+    jQuery('#debugging-stop').on('click', function() {
+	debStop();
+    });
+    
     jQuery.getJSON('getRecipes.php', function(data) {
 	recipes = data;
 	var obj = Object.keys(data);

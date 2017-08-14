@@ -76,6 +76,7 @@ if (isset($_GET['load'])) {
       <ul class="nav navbar-nav">
         <li><a href="/index.php" title="Back to report page">Report</a></li>
         <li><a href="../index.php" title="Back to auto-scoring page">Back to Auto-Scoring</a></li>
+        <li><a href="#" title="Start a new debugging session" id="start-debugging">Debug</a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li class="dropdown">
@@ -128,8 +129,20 @@ if (isset($_GET['load'])) {
              <g id="connects"></g>
           </svg>
       </div>
+      <div id="debugging-tools" height="60px;" style="position: absolute; top: 60px; left: 50%; transform: translate(-50%,0%); height: 40px; background: black; padding: 5px; padding-bottom: 5px; border-radius: 3px; border: 1px solid gray;">
+        <button type="button" class="btn btn-default" aria-label="Left Align" id="debugging-step-forward">
+          <span class="glyphicon glyphicon-large glyphicon-step-forward"></span>
+        </button>
+        <button type="button" class="btn btn-default" aria-label="Left Align" id="debugging-step-backward">
+          <span class="glyphicon glyphicon-step-backward"></span>
+        </button>
+        <button type="button" class="btn btn-default" aria-label="Left Align" id="debugging-stop">
+          <span class="glyphicon glyphicon-stop"></span>
+        </button>
+      </div>
+    
     </div>
-      
+
      <div class="modal fade" role="dialog" id="save-recipe-dialog">
        <div class="modal-dialog">
          <div class="modal-content">
