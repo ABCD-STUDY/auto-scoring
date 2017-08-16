@@ -126,6 +126,7 @@ if (isset($_GET['load'])) {
                 </pattern>
              </defs>
              <rect x="0" y="0" width="4000" height="4000" stroke="none" fill="url(#basicPattern)"></rect>
+             <g id="debugging"></g>
              <g id="connects"></g>
           </svg>
       </div>
@@ -139,6 +140,8 @@ if (isset($_GET['load'])) {
         <button type="button" class="btn btn-default" aria-label="Left Align" id="debugging-stop">
           <span class="glyphicon glyphicon-stop"></span>
         </button>
+        <input type="text" id="deb-epoch" title="Epoch" style="width: 50px;"/>
+        <input type="text" id="deb-step" title="Step" style="width: 50px;"/>
       </div>
     
     </div>
@@ -168,6 +171,16 @@ if (isset($_GET['load'])) {
        </div><!-- /.modal-dialog -->
      </div><!-- /.modal -->
 
+   <div class="modal fade" tabindex="-1" role="dialog" id="wait-dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-body">
+    <p>Wait...</p>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    
   <!-- Make Screenshots for recipes - works in Chrome only -->
   <canvas style="display: none;" id="canvas" width="800" height="800"></canvas>
   <div id="png-container" style="display: none;"></div>

@@ -91,9 +91,8 @@ if ($action == "start") {
     
     // after this step we have that number of steps done
     // lets get the lines from the history file that contain the step information
-    $ret = "[";
+    $ret = [];
     $lc = 0;
-    $bufcount = 0;
     if (is_file($file)) {
         $fp = fopen($file, "r");
         if ($fp === FALSE) {
@@ -105,17 +104,14 @@ if ($action == "start") {
             if (strlen($line) > 0) {
                 $lc++;
                 if ($lc > $linecount) {
-                    if ($bufcount > 0) {
-                        $ret = $ret . ",";
-                    }
-                    $ret = $ret . $line;
-                    $bufcount++;
+                    $va = json_decode($line,true);
+                    $va['line'] = $lc;
+                    $ret[] = $va;
                 }
             }
         }
         fclose($fp);
     }
-    $ret = $ret . "]";
     echo( json_encode( array( "message" => "Ok: ".$res, "result" => $ret ) ) );
     return;
 } else if($action == "stop") {

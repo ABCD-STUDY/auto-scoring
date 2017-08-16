@@ -684,6 +684,7 @@ var debCurrentStep = -1;
 var debCurrentBuffer = [];
 function debForward() {
     if (debCurrentStep === -1) {
+	jQuery('#wait-dialog').modal('show');
 	// first time we would start by getting a key
 	jQuery.getJSON('debugger.php', { 'action': 'start' }, function(data) {
 	    debCurrentKey = data['key'];
@@ -691,39 +692,151 @@ function debForward() {
 			   {
 		               'action': 'step',
 		               'key': debCurrentKey,
-		               'numSteps': 10,
+		               'numSteps': 1000, // do enough steps to get some useful data from redcap
 		               'recipe': jQuery('#recipes-list').val()
 	                   },
 			   function(data) {
 			       // fills in the current step buffer
-			       var buffer = JSON.parse(data['result']);
+			       var buffer = data['result'];
 			       for (var i = 0; i < buffer.length; i++) {
 				   debCurrentBuffer.push(buffer[i]);
 			       }
 			       debCurrentStep++;
 			       debShowStep();
+			       jQuery('#wait-dialog').modal('hide');
 			   });
 	});
 	return;
     }
     if (debCurrentStep >= debCurrentBuffer.length) {
+	// pause the interface - wait for the new data
+	jQuery('#wait-dialog').modal('show');
 	jQuery.getJSON('debugger.php',
 		       { 'action': 'step', 'key': debCurrentKey, 'numSteps': 10, 'recipe': jQuery('#recipes-list').val() },
 		       function(data) {
 			   console.log("got the following data: " +JSON.stringify(data));
-			   var buffer = JSON.parse(data['result']);
+			   var buffer = data['result'];
 			   for (var i = 0; i < buffer.length; i++) {
 			       debCurrentBuffer.push(buffer[i]);
 			   }
+			   jQuery('#wait-dialog').modal('hide');
+			   debCurrentStep++;
+			   debShowStep();
 		       });	
+    } else {
+	debCurrentStep++;
+	debShowStep();
     }
-    debCurrentStep++;
-    debShowStep();    
+}
+
+function drawValues(node, values) {
+    var x = 0;
+    var y = 0;
+
+    var keys = Object.keys(values);
+    var bb0 = jQuery('#right_svg')[0].getBoundingClientRect();
+    for (var i = 0; i < keys.length; i++) {
+	var value = values[keys[i]];
+	var key = keys[i];
+
+	// does the key exists in the the list of ports?
+	var listOfPorts = jQuery('[gid="' + node['gid'] + '"]').find('text').map(function(a) {
+	    return jQuery(this).text();
+	});
+	if (jQuery.inArray(key, listOfPorts) === -1) {
+	    // there is an alternative, the values array could contain the same number of entries as the
+	    // state array of this node. In that case use as key the key that is in the same order
+	    if (typeof node['state'] !== 'undefined') { 
+		for (var j = 0; j < node['state'].length; j++) {
+		    if (node['state'][j]['value'] === key) {
+			key = node['outputs'][j]['name'];
+			break;
+		    }
+		}
+	    }
+	}
+	
+	// find that item in svg and get its getBoundingClientRect()
+	jQuery('[gid="' + node['gid'] + '"]').find('text').each(function() {
+	    var text   = jQuery(this).text();
+	    var anchor = jQuery(this).attr('text-anchor');
+	    var pos    = jQuery(this)[0].getBoundingClientRect();
+	    if ( text !== key ) {
+		return;
+	    }
+	    y = parseInt( -bb0.top  + (pos.bottom));
+	    var order = 'middle';
+	    if (anchor == "end") {
+		// move to the right
+		x = parseInt( -bb0.left + pos.right );
+		x = x + 20;
+		order = 'start';
+	    } else {
+		x = parseInt( -bb0.left + pos.left );
+		x = x - 20;
+		order = 'end';
+	    }
+	    
+	    var t = jQuery(SVG('text'))
+		.attr('font-size', '16px')
+		.attr('fill', '#F26D21')
+		.attr('font-family', '"Source Sans Pro", "Helvetica Neue", Arial, Helvetica, sans-serif')
+		.attr('line-height', '1.4em')
+		.attr('font-weight', 800)
+		.attr('stroke', 'black')
+		.attr('stroke-width', '0.5px')
+		.attr('x', x)
+		.attr('y', y)
+		.attr('text-anchor', order);
+	    
+	    if (value === "") {
+		value = "[ ]";
+	    }
+	    jQuery(t).append(value);
+	    
+	    // add to #debugging node
+	    jQuery('#debugging').append(t);
+	});
+	
+    }
 }
 
 function debShowStep( ) {
+    if (typeof debCurrentBuffer[debCurrentStep] === 'undefined') {
+	return;
+    }
+    
     // visualize the current step
-    console.log('show the current step information: ' + debCurrentStep + ' as ' + JSON.stringify(debCurrentBuffer[debCurrentStep]));
+    console.log('step: ' + debCurrentStep + ' is ' + JSON.stringify(debCurrentBuffer[debCurrentStep]));
+
+    var entry = debCurrentBuffer[debCurrentStep];
+    var gid = entry['node-gid'];
+    var inputs  = entry['inputs'];
+    var outputs = entry['outputs'];
+
+    // find this gid in the list of nodes
+    var node = null;
+    for (var i = 0; i < nodes.length; i++) {
+	if (nodes[i]['gid'] == gid) {
+	    node = nodes[i];
+	    break;
+	}
+    }
+    if (node == null) {
+	console.log('unknown node found ' + gid);
+	return;
+    }
+
+    // for that nodes inputs draw the different values
+    jQuery('#debugging').children().remove();
+    if ( ! (Object.keys(inputs).length === 0) )
+	drawValues(node, inputs);
+    if ( ! (Object.keys(outputs).length === 0) )
+	drawValues(node, outputs);
+
+    // update the epoch and step numbers
+    jQuery('#deb-epoch').val(entry['epoch']);
+    jQuery('#deb-step').val(debCurrentStep);
 }
 
 function debBackward() {
@@ -731,7 +844,7 @@ function debBackward() {
 	return; // done
     }
     debCurrentStep--;
-    debShowStep(d);
+    debShowStep();
 }
 
 function debStop() {
@@ -740,6 +853,7 @@ function debStop() {
 	jQuery('#debugging-tools').fadeOut();
 	debCurrentStep = -1;
 	debCurrentKey = "";
+	jQuery('#debugging').children().remove();
     });	
 }
 
@@ -797,10 +911,47 @@ jQuery(document).ready(function() {
 	// toggle debugging tools
 	if (jQuery('#debugging-tools').is(":visible") ) {
 	    jQuery('#debugging-tools').fadeOut();
+	    // clean up
+	    jQuery('#debugging-stop').trigger('click');
 	} else {
 	    jQuery('#debugging-tools').fadeIn();
 	}
     });
+    jQuery('#deb-step').on('change', function() {
+	var value = jQuery('#deb-step').val();
+	if (value === debCurrentStep)
+	    return;
+	// change values by simulating button clicks
+	var steps = Math.abs(value - debCurrentStep);
+	if (value > debCurrentStep) {
+	    for (var i = 0; i < steps; i++) {
+		debForward();
+	    }
+	} else {
+	    for (var i = 0; i < steps; i++) {
+		debBackward();
+	    }
+	}
+    });
+    jQuery('#deb-epoch').on('change', function() {
+	var value = jQuery('#deb-epoch').val();
+	var currentEpoch = debCurrentBuffer[debCurrentStep]['epoch'];
+	if (value === currentEpoch)
+	    return;
+
+	// change values by simulating button clicks
+	if (value > currentEpoch) {
+	    while( debCurrentBuffer[debCurrentStep]['epoch'] < value) {
+		debForward();
+	    }
+	} else {
+	    while( debCurrentBuffer[debCurrentStep]['epoch'] > value) {
+		debBackward();
+	    }
+	}
+    });
+
+    
     jQuery('#debugging-step-forward').on('click', function() {
 	debForward();
     });
