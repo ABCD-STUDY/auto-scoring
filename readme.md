@@ -1,6 +1,6 @@
 # Auto-scoring
 
-This project comes in two parts - a viewer for viewing and editing algorithms and a runner for running algorithms. The top-level web-page is used to show the list of existing algorithms.
+This project comes in two parts - a viewer for viewing, editing and debugging algorithms and a runner for running algorithms (see ![here](https://github.com/ABCD-STUDY/auto-scoring/tree/master/runner)). The top-level web-page is used to show the list of existing algorithms.
 
 ![List of recipes](https://github.com/ABCD-STUDY/auto-scoring/raw/master/images/auto-scoring.png)
 
@@ -45,6 +45,10 @@ Nodes have two special visual elements at the top. The orange circle on the left
 There is currently no way to remove a connection between two ports. As a work-around remove the node on one end and add it again.
 
 Save and load graphs - or "recipes" from the select2 control on the top left of the page. Only Chrome browsers are currently able to create a screenshot of the recipe during the save operation. Both the recipe and its picture are stored in the recipes/ folder of the viewer sub-directory.
+
+### Debugging a recipe
+The "Debug" menu entry will start a new visual debugging session. During the session the runner will be called intermittendly to create a full history of a run. The web-page shows at each step the value of the currently evaluated node.
+
 
 ## Runner
 

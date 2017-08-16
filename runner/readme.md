@@ -1,7 +1,15 @@
 ## Runner
 
 ```
-  ./runner.js run -i ../viewer/recipes/FirstTest.json
+Run the recipe FirstTest:
+  ./runner.js run ../viewer/recipes/FirstTest.json
+
+Run the recipe FirstTest and create a history file with updates of each node for debugging:
+  ./runner.js run -h history.txt ../viewer/recipes/FirstTest.json
+
+Run the recipe FirstTest for 1,000 iterations and keep a history file. If the state file
+exists already add 1,000 additional computational steps:
+  ./runner.js run -d /tmp/state.json -s 1000 -h history.txt ../viewer/recipes/FirstTest.json
 ```
 
 The runner will execute the graph in stages. Each stage or epoch processes one set of input data, in our project a participant ID, a visit or event name and a set of raw scores (numbers or strings). During the epoch the input values to the graph will be fixed and all nodes in the graph will be called in a random order until no change in the graph is detected. This finishes the current epoch and the next epoch is started with a new set of input data. The runner finishes of there is no more data to process.
