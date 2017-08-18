@@ -76,6 +76,25 @@
 	    { "name": "item6", "type": "text", "many": "yes" }
 	]
     },
+    {
+	"name": "arithmetic",
+	"id": "arithmetic",
+	"group": "Arithmetic",
+	"description": "Arithmetic expression based on inputs A, B, C, etc.",
+	"inputs": [
+            { "name": "A", "type": "all" },
+            { "name": "B", "type": "all" },
+            { "name": "C", "type": "all" },
+            { "name": "D", "type": "all" },
+            { "name": "E", "type": "all" }
+	],
+	"state": [
+            { "name": "expression", "type": "text", "many": "yes" }
+	],
+	"outputs": [
+            { "name": "out", "type": "all" }
+	]
+    },
     { 
 	"name": "Console Out",
 	"id": "console-out",
@@ -263,6 +282,7 @@
 	"outputs": [
 	    { "name": "out", "type": "all" },
 	    { "name": "num_missing", "type": "all" },
+	    { "name": "num_present", "type": "all" },
 	    { "name": "num_total", "type": "all" }
 	]
     },
