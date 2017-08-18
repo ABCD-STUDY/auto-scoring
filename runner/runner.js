@@ -546,7 +546,6 @@ let runSetup = (file, options) => {
 program
     .version('0.0.1')
     .command('run [file]')
-    .option('-i, --input', 'input file name')
     .option('-h, --history [historyFile]', 'history file name')
     .option('-d, --debug [debugFile]', 'debug file name')
     .option('-s, --steps [numSteps]', 'number of steps to perform')
