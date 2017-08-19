@@ -13,7 +13,7 @@ var RedcapPut = function (n) {
     this._results = [];
     this._currentEpoch = 0;
     this._lastData = null;
-    this._batchSendSize = 100; // every 200 participants send something to REDCap
+    this._batchSendSize = 400; // every 200 participants send something to REDCap
 };
 
 function clone(obj) {
@@ -56,8 +56,8 @@ function sendToREDCap( scores ) {
     // sent out
     // How to prevent too fast send operations? For now hope the program is slow enough...
 
-    //var tokens = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../../../code/php/tokens.json'), 'utf8'));
-    var tokens = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../../tokens.json'), 'utf8'));
+    var tokens = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../../../code/php/tokens.json'), 'utf8'));
+    //var tokens = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../../tokens.json'), 'utf8'));
 
     var localScores = {}; // send by site and event to be able to use the normal tokens and limit error messages
     // only send data that we have not send before
@@ -165,12 +165,16 @@ function sendToREDCap( scores ) {
         var num = 0;
         for (var j = 0; j < events.length; j++) {
             num = num + localScores[site][events[j]].length;
+	    var event = events[j];
             thisSiteData.push.apply(thisSiteData, localScores[site][events[j]]);
-            queue.push({ token: tokens, self: this, site: site, scores: localScores[site][events[j]] }, (function (site, num) {
+            queue.push({ token: tokens, self: this, site: site, scores: localScores[site][events[j]] }, (function (site, num, event) {
                 return function (err) {
-                    console.log("Finished sending " + num + " data for site " + site);
+		    if (num == 1) 
+			console.log("Finished sending " + num + " data set for site " + site + " (" + event + ").");
+		    else
+			console.log("Finished sending " + num + " data sets for site " + site + " (" + event + ").");
                 };
-            })(site, num));
+            })(site, num, event));
         }
     }
 }
