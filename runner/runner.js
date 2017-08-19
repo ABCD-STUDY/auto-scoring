@@ -36,6 +36,8 @@ var ConstantNumber = require("./nodes/constant-number.js")
 var ConstantText   = require("./nodes/constant-text.js")
 var SmallerEqual   = require("./nodes/smallerequal.js")
 var GreaterEqual   = require("./nodes/greaterequal.js")
+var Smaller        = require("./nodes/smaller.js")
+var Greater        = require("./nodes/greater.js")
 var Maximum        = require("./nodes/maximum.js")
 var Minimum        = require("./nodes/minimum.js")
 var Filter         = require("./nodes/filter.js")
@@ -300,6 +302,10 @@ function createWorker( id, state, node, recipe) {
         return new SmallerEqual(recipe);
     case 'greater-equal':
         return new GreaterEqual(recipe);
+    case 'smaller':
+        return new Smaller(recipe);
+    case 'greater':
+        return new Greater(recipe);
     case 'maximum':
         return new Maximum(recipe);
     case 'minimum':
