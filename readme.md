@@ -1,6 +1,6 @@
 # Auto-scoring
 
-This project comes in two parts - a viewer for viewing, editing and debugging algorithms and a runner for running algorithms (see ![here](https://github.com/ABCD-STUDY/auto-scoring/tree/master/runner)). The top-level web-page is used to show the list of existing algorithms.
+This project comes in two parts - a viewer for viewing, editing and debugging algorithms and a runner for running algorithms (see [here](runner/readme.md)). The top-level web-page is used to show the list of existing algorithms.
 
 ![List of recipes](https://github.com/ABCD-STUDY/auto-scoring/raw/master/images/auto-scoring.png)
 
