@@ -408,7 +408,7 @@ function fillItems() {
 	    currentX = e.clientX;
 	    currentY = e.clientY;
 	    jQuery(selectedElement).parent().attr('transform', 'translate(' + dx + ',' + dy + ')');
-	    if (dx !== 0 || dy !== 0)
+	    if (Math.abs(dx) <= 4 || Math.abs(dy) <= 4)
   		wasMoved = true;
 
 	    // now update the position information on the graph item
@@ -562,12 +562,13 @@ function addStateDisplay( state ) {
 	if (state[i]['type'] == "text") {
   	    jQuery('#left-down').append("<div id=\"" + gid + "-" + state[i]['name'] + "\" parent-id=\"" + parentID + "\" class=\"form-group\" style=\"width: 200px\"><label>" + state[i]['name'] + "</label><input class=\"form-control input-sm state-input\" type=\"text\" placeholder=\"undefined\" value=\"" + ((typeof state[i]['value'] !== 'undefined')?state[i]['value']:"") + "\"></div>");
 	} else if (state[i]['type'] == "textarea") {
+	    var text = (typeof state[i]['value'] !== 'undefined')?state[i]['value']:"";
   	    jQuery('#left-down').append("<div id=\"" + gid + "-" + state[i]['name'] +
 					"\" parent-id=\"" + parentID + "\" class=\"form-group\" style=\"width: 200px\"><label>" +
 					state[i]['name'] +
 					"</label><textarea class=\"form-control input-sm state-input\" type=\"textarea\" rows=\"5\" " +
 					"placeholder=\"undefined\" value=\"" +
-					((typeof state[i]['value'] !== 'undefined')?state[i]['value']:"") + "\"></textarea></div>");
+					text + "\">" + text + "</textarea></div>");
 
 	}
     }
