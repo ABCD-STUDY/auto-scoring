@@ -113,7 +113,7 @@ echo(']; </script>');
     <div class="container-fluid">
        <div class="row-fluid">
     <hr>
-        <p><i>A service provided by the Data Analysis and Informatics Core of the ABCD study.</i></p>
+    <p><i>A service provided by the Data Analysis and Informatics Core of the ABCD study. Source-code is available on github.com/ABCD-STUDY/auto-scoring.</i></p>
        </div>
     </div>
     

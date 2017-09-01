@@ -135,7 +135,7 @@ function getEnabledValue(n, recipe) {
                 }
 
                 // add to inputs
-                enabled = enabled && (value != 0);
+                enabled = enabled && (value !== 0);
             }
         }
     }
@@ -287,6 +287,8 @@ var workers = {};
 function createWorker( id, state, node, recipe) {
     switch (id ) {
     case "redcap-measure-get":
+        return new RedcapGet(state);
+    case "redcap-measure-get-huge":
         return new RedcapGet(state);
     case 'redcap-measure-put':
         return new RedcapPut(node);

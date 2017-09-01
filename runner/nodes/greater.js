@@ -4,7 +4,16 @@
 
 var Greater = function (env) {
     // create this function only once, otherwise we think this nodes output changed
-    this._condition = function(a,b) { return a > b; };
+    this._condition = function(a,b) {
+	var toString = Object.prototype.toString;
+	if ( toString.call(a) == '[object String]' ) {
+	    a = parseFloat(a);
+	}
+	if ( toString.call(b) == '[object String]' ) {
+	    b = parseFloat(b);
+	}
+	return a > b;
+    };
 };
 
 Greater.prototype.work = function (inputs, outputs, state) {
