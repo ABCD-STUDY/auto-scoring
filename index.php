@@ -119,6 +119,8 @@ echo(']; </script>');
     
   <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
   <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+  <script src="js/jquery.ui.touch-punch.min.js"></script>  
+    
   <!-- Bootstrap Core JavaScript -->
   <script src="js/bootstrap.min.js"></script>
 
@@ -138,6 +140,10 @@ echo(']; </script>');
       });
 
       jQuery('body').on('click', '.edit-icon', function() {
+          var recipe = jQuery(this).parent().parent().attr('recipe');
+          window.open('viewer/index.php?load=' + recipe, '_viewer');
+      });
+      jQuery('body').on('touchend', '.edit-icon', function() {
           var recipe = jQuery(this).parent().parent().attr('recipe');
           window.open('viewer/index.php?load=' + recipe, '_viewer');
       });
