@@ -45,3 +45,23 @@
     top: 15px;
     left: 15px;
 }
+
+.recipe-name {
+    font-size: 16px;
+    color: orange;
+    text-shadow: black 0px 0px 5px;
+}
+
+.panel-footer {
+    background-color: #555;
+}
+.recipe-user-name {
+    color: white;
+}
+.panel {
+    overflow: hidden;
+}
+.panel:hover {
+    box-shadow: black 0px 0px 4px;
+    transition: all 0.2s ease-in-out;
+}

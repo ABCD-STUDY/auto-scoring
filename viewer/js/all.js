@@ -487,6 +487,15 @@ function fillItems() {
 	// cleanup the connections array again
 	connections = connections.filter(function(val){return val});
 
+	// lets remove the status interface elements for this node
+	jQuery('#left-down').children().each(function(a,b) {
+	    var parentid = jQuery(b).attr('parent-id');
+	    if (parentid == gid) {
+		jQuery(b).remove();
+	    }
+	});
+
+	
 	// and update the display (don't we need a deep copy here?
 	// change the state of the current graph
 	var id = jQuery('#recipes-list option:selected').attr('state-id');
@@ -907,6 +916,11 @@ jQuery(document).ready(function() {
     fillItems();
     setupStateValues();
 
+    jQuery('#save-new-recipe').on('click', function() {
+	// copy the value of the current instrument to the interface
+	jQuery('#new-name').val( jQuery('#recipes-list').val() );
+    });
+    
     jQuery('#debugging-tools').hide();
     jQuery('#start-debugging').on('click', function() {
 	// toggle debugging tools
