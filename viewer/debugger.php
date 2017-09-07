@@ -114,11 +114,11 @@ if ($action == "start") {
     }
     echo( json_encode( array( "message" => "Ok: ".$res, "result" => $ret ) ) );
     return;
-} else if($action == "stop") {
+} else if ($action == "stop") {
     // we can clean up the directory now
     $key = "";
     if (isset($_GET['key'])) {
-        $key = $_GET['numSteps'];
+        $key = $_GET['key'];
     }
     if ($key === "") {
         echo( json_encode( array( "message" => "Error: no key given." ) ) );

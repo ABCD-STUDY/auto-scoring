@@ -49,6 +49,7 @@ var exportFileName = "";
 var historyFile = "";
 var debugFile   = "";
 var numSteps    = 0;
+var pretendMode = false;
 
 // return the values for a node from the incoming connections (each incoming connections source nodes internal state value)
 function getInputValues(n, recipe) {
@@ -291,7 +292,7 @@ function createWorker( id, state, node, recipe) {
     case "redcap-measure-get-huge":
         return new RedcapGet(state);
     case 'redcap-measure-put':
-        return new RedcapPut(node);
+        return new RedcapPut(node, pretendMode);
     case 'not':
         return new Not(recipe);
     case 'filter':
@@ -483,7 +484,14 @@ let runSetup = (file, options) => {
         params.push('d')
     if (options.steps)
         params.push('s')
+    if (options.pretend)
+        params.push('p')
 
+    pretendMode = false;
+    if (options.pretend) {
+	pretendMode = true;
+    }
+    
     if (options.history && options.history != "") {
         console.log("Info: will write history information to " + options.history);
         historyFile = options.history;
@@ -557,6 +565,7 @@ program
     .option('-h, --history [historyFile]', 'history file name')
     .option('-d, --debug [debugFile]', 'debug file name')
     .option('-s, --steps [numSteps]', 'number of steps to perform')
+    .option('-p, --pretend', 'only pretend to do something')
     .action(runSetup);
 
 program.parse(process.argv); // end with parse to parse through the input

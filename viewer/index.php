@@ -91,9 +91,11 @@ if (isset($_GET['load'])) {
   </div><!-- /.container-fluid -->
 </nav>
 
+
+    
   <!-- start session button -->
-    <div class="container-fluid">
-      <div style="overflow: hidden;">
+  <div class="container-fluid">
+    <div style="overflow: hidden;">
           <div id="left" style="position: absolute; margin: 0px; margin-left: 10px; left: 4px; top: 67px; bottom: 14px; width: 250px; z-index: 0; display: block; overflow-y: scroll; overflow-x: hidden;">
              <div id="left-top" style="position: relative; height: 100px; overflow: hidden;">
                   <div style="background: #313638;">
@@ -143,9 +145,13 @@ if (isset($_GET['load'])) {
         <input type="text" id="deb-epoch" title="Epoch" style="width: 50px;"/>
         <input type="text" id="deb-step" title="Step" style="width: 50px;"/>
       </div>
-    
-    </div>
 
+    </div>
+</div>
+      <div id="console" style="display: none; background-color: rgba(25,25,25,0.2); position: fixed; bottom: 10px; left: 250px; z-index:2; height: 300px; width: 800px; padding: 5px;">
+         <textarea id="console-textarea" style="resize: none; width: 100%; height: 100%; background-color: rgba(25,25,25,0.2); overflow-y:scroll;">Test Text</textarea>
+      </div>
+    
      <div class="modal fade" role="dialog" id="save-recipe-dialog">
        <div class="modal-dialog">
          <div class="modal-content">
@@ -189,7 +195,8 @@ if (isset($_GET['load'])) {
   <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
   <script src="js/jquery.ui.touch-punch.min.js"></script>  
   <script src='js/moment.min.js'></script>
-  <!-- Bootstrap Core JavaScript -->
+  <script src='js/typed.min.js'></script>
+    <!-- Bootstrap Core JavaScript -->
   <script src="js/bootstrap.min.js"></script>
 
   <script src="js/select2.full.min.js"></script>

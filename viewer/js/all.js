@@ -405,6 +405,10 @@ function fillItems() {
 	    
 	    var dx = parseInt(res[1]) + e.clientX - currentX;
 	    var dy = parseInt(res[2]) + e.clientY - currentY;
+	    // snap to grid
+	    //dx = Math.round(Math.round(dx/5)*5);
+	    //dy = Math.round(Math.round(dy/5)*5);
+	    
 	    currentX = e.clientX;
 	    currentY = e.clientY;
 	    jQuery(selectedElement).parent().attr('transform', 'translate(' + dx + ',' + dy + ')');
@@ -689,12 +693,40 @@ function createCurrentGraph( rep ) {
     selectedElement = null;
 }
 
+function pickQuote() {
+    quotes = [ "Each life is made up of mistakes and learning, waiting and growing, practicing patience and being persistent.",
+	       "Patience is a virtue, and I'm learning patience. It's a tough lesson.",
+	       "Qualities you need to get through medical school and residency: Discipline. Patience. Perseverance. A willingness to forgo sleep. A penchant for sadomasochism. Ability to weather crises of faith and self-confidence. Accept exhaustion as fact of life. Addiction to caffeine a definite plus. Unfailing optimism that the end is in sight.",
+	       "I am patient with stupidity but not with those who are proud of it.",
+	       "We could never learn to be brave and patient, if there were only joy in the world.",
+	       "He who rides the sea of the Nile must have sails woven of patience.",
+	       "Endurance is nobler than strength, and patience than beauty.",
+	       "Deliberately seek opportunities for kindness, sympathy, and patience.",
+	       "Beware the fury of a patient man.",
+	       "Patience is the ability to idle your motor when you feel like stripping your gears.",
+	       "As for goals, I don't set myself those anymore. I'm not one of these 'I must have achieved this and that by next year' kind of writers. I take things as they come and find that patience and persistence tend to win out in the end.",
+	       "If you would know strength and patience, welcome the company of trees.",
+	       "How can a society that exists on instant mashed potatoes, packaged cake mixes, frozen dinners, and instant cameras teach patience to its young?",
+	       "I think we can all use a little more patience. I get a little impatient sometimes and I wish I didn't. I really need to be more patient."
+	     ];
+
+    var typed = new Typed('#wait-dialog p', {
+	strings: quotes,
+	typeSpeed: 100,
+	shuffle: true
+    });
+
+}
+
 var debCurrentKey = "";
 var debCurrentStep = -1;
 var debCurrentBuffer = [];
 function debForward() {
     if (debCurrentStep === -1) {
 	jQuery('#wait-dialog').modal('show');
+	setTimeout( function() { pickQuote(); }, 200);
+	jQuery('#console').fadeIn();
+	jQuery('#console textarea').val("");
 	// first time we would start by getting a key
 	jQuery.getJSON('debugger.php', { 'action': 'start' }, function(data) {
 	    debCurrentKey = data['key'];
@@ -710,7 +742,22 @@ function debForward() {
 			       var buffer = data['result'];
 			       for (var i = 0; i < buffer.length; i++) {
 				   debCurrentBuffer.push(buffer[i]);
+				   //jQuery('#console textarea').val(jQuery('#console textarea').val() + "\n" + JSON.stringify(buffer[i]));
 			       }
+			       setTimeout(function() {
+				   var elementsOfInterest = debCurrentBuffer.filter(function(a) { if (a['node-id'] == 'redcap-measure-put') return true; return false; });
+				   elementsOfInterest = elementsOfInterest.map(function(a) {
+				       var k = Object.keys(a['inputs']);
+				       var str = "'line': " + (a['line']-1) + " -> ";
+				       for (var i = 0; i < k.length; i++) {
+					   str = str + k[i] + ": '" + a['inputs'][k[i]] + "'";
+					   if (i < k.length-1)
+					       str = str + ", ";
+				       }
+				       return str;
+				   });
+				   jQuery('#console textarea').val( JSON.stringify(elementsOfInterest, null, 2));
+			       }, 1000);
 			       debCurrentStep++;
 			       debShowStep();
 			       jQuery('#wait-dialog').modal('hide');
@@ -721,6 +768,7 @@ function debForward() {
     if (debCurrentStep >= debCurrentBuffer.length) {
 	// pause the interface - wait for the new data
 	jQuery('#wait-dialog').modal('show');
+	setTimeout( function() { pickQuote(); }, 200);
 	jQuery.getJSON('debugger.php',
 		       { 'action': 'step', 'key': debCurrentKey, 'numSteps': 10, 'recipe': jQuery('#recipes-list').val() },
 		       function(data) {
@@ -728,7 +776,22 @@ function debForward() {
 			   var buffer = data['result'];
 			   for (var i = 0; i < buffer.length; i++) {
 			       debCurrentBuffer.push(buffer[i]);
+			       //jQuery('#console textarea').val(jQuery('#console textarea').val() + "\n" + JSON.stringify(buffer[i]));
 			   }
+			   setTimeout(function() {
+			       var elementsOfInterest = debCurrentBuffer.filter(function(b) { if (b['node-id'] == 'redcap-measure-put') return true; return false; });
+			       elementsOfInterest = elementsOfInterest.map(function(a) {
+				   var k = Object.keys(a['inputs']);
+				   var str = "'line': " + (a['line']-1) + " -> ";
+				   for (var i = 0; i < k.length; i++) {
+				       str = str + k[i] + ": '" + a['inputs'][k[i]] + "'";
+				       if (i < k.length-1)
+					   str = str + ", ";
+				   }
+				   return str;
+			       });
+			       jQuery('#console textarea').val(JSON.stringify(elementsOfInterest, null, 2));
+			   }, 1000);
 			   jQuery('#wait-dialog').modal('hide');
 			   debCurrentStep++;
 			   debShowStep();
@@ -847,6 +910,34 @@ function debShowStep( ) {
     // update the epoch and step numbers
     jQuery('#deb-epoch').val(entry['epoch']);
     jQuery('#deb-step').val(debCurrentStep);
+
+    // move the cursor in the console window to this location
+    var searchTerm = "'line': " + debCurrentStep + " "; // the searched word
+    var posi = jQuery('#console textarea').val().indexOf(searchTerm); // take the position of the word in the text
+    if (posi != -1) {
+	var target = document.getElementById("console-textarea");
+	// select the textarea and the word
+	target.focus();
+	if (target.setSelectionRange)
+	    target.setSelectionRange(posi, posi+searchTerm.length);
+	else {
+	    var r = target.createTextRange();
+	    r.collapse(true);
+	    r.moveEnd('character',  posi+searchTerm);
+	    r.moveStart('character', posi);
+	    r.select();
+	}
+	var objDiv = document.getElementById("console-textarea");
+	var sh = objDiv.scrollHeight; //height in pixel of the textarea (n_rows*line_height)
+	var line_ht = jQuery('#console-textarea').css('line-height').replace('px',''); //height in pixel of each row
+	var n_lines = sh/line_ht; // the total amount of lines
+	var char_in_line = jQuery('#console-textarea').val().length / n_lines; // amount of chars for each line
+	var height = Math.floor(posi/char_in_line); // amount of lines in the textarea
+	jQuery('#console-textarea').scrollTop(height*line_ht); // scroll to the selected line
+    } else {
+	console.log('search term step not found');
+    }
+    
 }
 
 function debBackward() {
@@ -858,13 +949,16 @@ function debBackward() {
 }
 
 function debStop() {
-    jQuery.getJSON('debugger.php', { 'action': 'stop', 'key': debCurrentKey }, function(data) {
-	debCurrentBuffer = [];
-	jQuery('#debugging-tools').fadeOut();
-	debCurrentStep = -1;
-	debCurrentKey = "";
-	jQuery('#debugging').children().remove();
-    });	
+    jQuery('#console').fadeOut();
+    jQuery('#console textarea').val("");
+    jQuery.getJSON('debugger.php', { 'action': 'stop', 'key': debCurrentKey });
+    debCurrentBuffer = [];
+    jQuery('#debugging-tools').fadeOut();
+    debCurrentStep = -1;
+    debCurrentKey = "";
+    jQuery('#debugging').children().remove();
+    jQuery('#deb-epoch').val("");
+    jQuery('#deb-step').val("");
 }
 
 function createScreenshot() {
