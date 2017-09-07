@@ -25,6 +25,7 @@ Mean.prototype.work = function (inputs, outputs, state) {
         outputs['out'] = sum / num_present;
     }
     outputs['num_missing'] = num_missing;
+    outputs['num_present'] = num_present;
     outputs['num_total']   = obj.length;
 };
 

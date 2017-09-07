@@ -613,6 +613,7 @@
 	"outputs": [
 	    { "name": "out", "type": "all" },
 	    { "name": "num_missing", "type": "all" },
+	    { "name": "num_present", "type": "all" },
 	    { "name": "num_total", "type": "all" }
 	]
     },
