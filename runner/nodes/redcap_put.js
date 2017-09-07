@@ -8,12 +8,13 @@ var path = require('path');
 //var json = require('json');
 
 
-var RedcapPut = function (n) {
+var RedcapPut = function (n, pretendMode) {
     this._node = n; // this contains the list of variables we need to query from REDCap, ask for them initially instead of in the worker
     this._results = [];
     this._currentEpoch = 0;
     this._lastData = null;
     this._batchSendSize = 400; // every 200 participants send something to REDCap
+    this._pretendMode = pretendMode;
 };
 
 function clone(obj) {
@@ -52,6 +53,13 @@ function clone(obj) {
 
 // sends scores back to redcap
 function sendToREDCap( scores ) {
+    if (this._pretendMode == true) {
+	for (var i = 0; i < scores['scores'].length; i++) {
+	    scores['scores'][i]['_send_marker'] = 1; // pretend to have done something
+	}
+	return; // don't do anything
+    }
+    
     // we should send a batch of the scores to REDCap, remove those from the list that we have already
     // sent out
     // How to prevent too fast send operations? For now hope the program is slow enough...
