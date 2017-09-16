@@ -250,6 +250,13 @@ function endEpoch(recipe) {
             }
         }
     }
+    for (var i = 0; i < recipe['nodes'].length; i++) {
+        var node = recipe['nodes'][i];
+        // just in case lets look at every node and clear its values
+        for (var j = 0; j < node['outputs'].length; j++) {
+            delete node['outputs'][j]['value'];
+        }
+    }
 }
 
 // at the very end tell nodes to cleanUp after themselves

@@ -68,13 +68,13 @@ RedcapGet.prototype.work = function (inputs, outputs, state) {
     outputs['redcap_event_name'] = redcap_event_name;
     for (var i = 0; i < state.length; i++) {
         if (typeof state[i]['value'] === 'undefined')
-            continue;
+            continue
         if (typeof entry[ state[i]['value'] ] === 'undefined' ) {
             //console.log("Error: tried to get variable \"" + state[i]['value'] + "\" from REDCap but could not get it.");
-            continue;
+            continue
         }
         if ( state[i]['value'] === 'id_redcap' || state[i]['value'] === 'redcap_event_name' )
-            continue; // don't overwrite
+            continue // don't overwrite
         // find out if we have to look for a checkbox, in that case ask for the variable instead
         var val = entry [ state[i]['value'] ];
         outputs[ state[i]['value'] ] = val;
@@ -107,7 +107,7 @@ RedcapGet.prototype.setupGetAllData = function() {
         if (m && m.length > 1) {
             val = m[1]; // replace with text before tripple underscores
         }
-	if (val !== "")
+	    if (val !== "")
             listOfItems.push( val );
     }
     console.log("List of variables we request from REDCap: " + JSON.stringify(listOfItems));
