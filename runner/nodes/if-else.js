@@ -31,8 +31,10 @@ IfElse.prototype.work = function (inputs, outputs, state) {
         a = inputs['a'];
     }
 
-    if (a === null || b === null || condition === null) {
-        // don't do anything
+    if (condition === null || typeof condition == 'undefined') {
+        // don't allow anything
+	outputs['true'] = 0;
+	outputs['false'] = 0; // both are false
         return;
     }
 

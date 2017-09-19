@@ -134,6 +134,8 @@ function getEnabledValue(n, recipe) {
                     // value = targetNode['state'][outputPort]['value'];  // this is the internal value, not the calculated one
                     value = targetNode['outputs'][outputPort]['value'];
                 }
+                if (typeof value === 'undefined' )
+                    value = 0; 
 
                 // add to inputs
                 enabled = enabled && (value !== 0);
@@ -253,7 +255,7 @@ function endEpoch(recipe) {
     for (var i = 0; i < recipe['nodes'].length; i++) {
         var node = recipe['nodes'][i];
         // just in case lets look at every node and clear its values
-        for (var j = 0; j < node['outputs'].length; j++) {
+        for (var j = 0; j < node['outputs'].length; j++) { //  
             delete node['outputs'][j]['value'];
         }
     }
@@ -379,12 +381,27 @@ function work(node, recipe) {
     if (worker !== null) {
         worker.work(inputs, outputs, state);
         if (historyFile != "") {
+	    // to make this more useful detect functions and indicate those in the output as well
+	    var ins  = {}; var ik = Object.keys(inputs);
+	    var outs = {}; var ok = Object.keys(outputs);
+	    for (var i = 0; i < ik.length; i++) {
+		if (typeof inputs[ik[i]] == 'function')
+		    ins[ik[i]] = 'func' + inputs[ik[i]].name;
+		else
+		    ins[ik[i]] = clone(inputs[ik[i]]);
+	    }
+	    for (var i = 0; i < ok.length; i++) {
+		if (typeof outputs[ok[i]] == 'function')
+		    outs[ok[i]] = 'func' + outputs[ok[i]].name;
+		else
+		    outs[ok[i]] = clone(outputs[ok[i]]);
+	    }
             fs.appendFileSync(historyFile, JSON.stringify({ 
                 'node-id': node['id'],
                 'node-gid': gid,
                 'epoch': epoch, 
-                'inputs': inputs, 
-                'outputs': outputs }) + "\n" );
+                'inputs': ins, 
+                'outputs': outs }) + "\n" );
         }
 
         // is the state different? or the outputs? or the inputs?

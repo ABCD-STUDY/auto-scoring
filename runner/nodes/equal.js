@@ -21,7 +21,7 @@ var Equal = function (env) {
             a = parseFloat(a);
         }
 
-        return a == b; 
+        return a === b; // do we need to do === ?
     };
 };
 
