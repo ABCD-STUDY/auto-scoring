@@ -107,7 +107,7 @@ RedcapGet.prototype.setupGetAllData = function() {
         if (m && m.length > 1) {
             val = m[1]; // replace with text before tripple underscores
         }
-	    if (val !== "")
+	if (val !== "" && listOfItems.indexOf(val) === -1) // don't add variables several times
             listOfItems.push( val );
     }
     console.log("List of variables we request from REDCap: " + JSON.stringify(listOfItems));
