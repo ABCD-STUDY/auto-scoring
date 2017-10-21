@@ -186,6 +186,14 @@ if (isset($_GET['load'])) {
         </div><!-- /.modal-content -->
       </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
+
+
+    <ul class='custom-menu'>
+      <!-- <li data-action="first">First thing</li>
+      <li data-action="second">Second thing</li>
+      <li data-action="third">Third thing</li> -->
+    </ul>
+    
     
   <!-- Make Screenshots for recipes - works in Chrome only -->
   <canvas style="display: none;" id="canvas" width="800" height="800"></canvas>

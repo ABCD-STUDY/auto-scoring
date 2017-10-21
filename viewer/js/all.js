@@ -1006,6 +1006,92 @@ function createScreenshot() {
 var recipes = [];
 
 jQuery(document).ready(function() {
+
+    jQuery('.custom-menu').on('click', '.remove-connection', function() {
+	// remove a connection
+	var a = jQuery(this).attr('node-id');
+	console.log("remove a port now: " + a);
+	
+        var li = connections.length;
+	while (li--) { // count backwards because we will remove elements from the array
+	    if (a === connections[li]['id']) {
+		connections.splice(li,1);
+		break;
+	    }
+	}
+	// cleanup the connections array again
+	connections = connections.filter(function(val){return val});
+	// and update the display (don't we need a deep copy here?
+	// change the state of the current graph
+
+	var id = jQuery('#recipes-list option:selected').attr('state-id');
+	recipes[id] = { nodes: nodes, connections: connections };
+	createCurrentGraph( recipes[id] );
+	jQuery('.custom-menu').hide();
+    });
+    // work in progress
+    jQuery('#right_svg').bind("contextmenu", function (event) {
+	if (jQuery(event.target).parent().attr('class') !== 'input-item')
+	    return true;
+
+	jQuery('.custom-menu').children().remove();
+	// find out what connection we have here - create those in .custom-menu
+	var id = jQuery(event.target).parent().attr('id');
+	console.log("got a gid: " + id);
+	var cons = [];
+	for (var i = 0; i < connections.length; i++) {
+	    var c = connections[i];
+	    if (c['source'] == id) {
+		// found the connection
+		jQuery('.custom-menu').append("<li class=\"remove-connection\" data-action=\"something\" node-id=\"" + c['id'] + "\">delete: " + id + "</li>");
+		// maybe better to highlight the connection
+	    }
+	    if (c['target'] == id) {
+		// found the connection
+		jQuery('.custom-menu').append("<li class=\"remove-connection\" data-action=\"something\" node-id=\"" + c['id'] + "\">delete: " + id + "</li>");
+	    }
+	}
+	
+	// Avoid the real one
+	event.preventDefault();
+
+	// Show contextmenu
+	$(".custom-menu").finish().toggle(100).
+
+	// In the right position (the mouse)
+	css({
+	    top: event.pageY + "px",
+	    left: event.pageX + "px"
+	});
+    });
+
+    $("#right_svg .custom-menu li").click(function(){
+	
+	// This is the triggered action name
+	switch($(this).attr("data-action")) {
+	    
+	    // A case for each action. Your actions here
+	case "first": alert("first"); break;
+	case "second": alert("second"); break;
+	case "third": alert("third"); break;
+	}
+	
+	// Hide it AFTER the action was triggered
+	$(".custom-menu").hide(100);
+    });
+    
+    // If the document is clicked somewhere
+    $(document).bind("mousedown", function (e) {
+
+	// If the clicked element is not the menu
+	if (!$(e.target).parents(".custom-menu").length > 0) {
+
+	    // Hide it
+	    $(".custom-menu").hide(100);
+	}
+    });
+    
+    
     jQuery('.select2').select2({});
     fillItems();
     setupStateValues();

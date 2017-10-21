@@ -63,7 +63,7 @@ function getInputValues(n, recipe) {
         var id = thisinput['id'];
         for (var i = 0; i < connections.length; i++) {   	// find this inputs connections
             if (connections[i]['target'].indexOf(id) !== -1) {
-		// found one connection that leads to this node (inputs have to be singeltons? Or can we have more than one input and we pick a random value?)
+                // found one connection that leads to this node (inputs have to be singeltons? Or can we have more than one input and we pick a random value?)
                 // what is the node on the other end of the connection? This node is the target.
                 var targetNodeID = connections[i]['source'];
                 var targetNode = null;
@@ -91,9 +91,9 @@ function getInputValues(n, recipe) {
                     // add to inputs
                     // for undefined this would indicate that a value was expected - but could not be set by the recipe at this point in time
                     if (typeof inputs[thisinputName] === 'undefined' || inputs[thisinputName] === undefined) {
-			// if we have more than one connection to this node we should use the last one that has a value not undefined
+                        // if we have more than one connection to this node we should use the last one that has a value not undefined
                         inputs[thisinputName] = value;
-		    }
+                    }
                 }
             }
         }
@@ -362,7 +362,7 @@ function createWorker( id, state, node, recipe) {
 function work(node, recipe) {
     // run this node on the current environment
     // collect the inputs for this node
-    var inputs = getInputValues(node, recipe);
+    var inputs  = getInputValues(node, recipe);
     var enabled = getEnabledValue(node, recipe);
     var outputs = {};
 
@@ -426,9 +426,9 @@ function work(node, recipe) {
         } else {
             done = done && false;
         }
-        workers[gid]['inputs'] = clone(inputs);
+        workers[gid]['inputs']  = clone(inputs);
         workers[gid]['outputs'] = clone(outputs);
-        workers[gid]['state'] = clone(state);
+        workers[gid]['state']   = clone(state);
         workers[gid]['enabled'] = enabled;
 
         // we should set all other values for the outputs to undefined -
