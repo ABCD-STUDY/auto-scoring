@@ -10,17 +10,18 @@ var Equal = function (env) {
         // what if a, b are strings or numbers? 
         // If both are strings compare as string
         if (typeof a == 'string' && typeof b == 'string') {
+	    //console.log(" -> a: " + a + " b: " + b + " result: " + (a == b));
             return a == b;
         }
 
         // if one is number convert the other to number as well
         if (typeof a == 'number' && typeof b == 'string') {
-            b = parseFloat(b);
+            b = parseInt(b); // parseInt(b)
         }
         if (typeof b == 'number' && typeof a == 'string') {
-            a = parseFloat(a);
+            a = parseInt(a);
         }
-
+	//console.log(" -> a: " + a + " b: " + b + " result: " + (a === b));
         return a === b; // do we need to do === ?
     };
 };

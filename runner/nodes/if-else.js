@@ -38,7 +38,7 @@ IfElse.prototype.work = function (inputs, outputs, state) {
         return;
     }
 
-    var res = condition(a, b)
+    var res = condition(a, b);
     if (res) {
         outputs['true'] = 1;
         outputs['false'] = 0;

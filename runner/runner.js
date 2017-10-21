@@ -165,6 +165,10 @@ function isEquivalent(x, y) {
     if (!(x instanceof Object)) { return false; }
     if (!(y instanceof Object)) { return false; }
 
+    if (!isNaN(x) && !isNaN(y)) { // should return true of the two floats are the same at 6 decimal places
+	return parseFloat(x).toFixed(6) == parseFloat(y).toFixed(6);
+    }
+    
     // recursive object equality check
     var p = Object.keys(x);
     return Object.keys(y).every(function (i) { return p.indexOf(i) !== -1; }) &&
@@ -266,6 +270,8 @@ function cleanUp(recipe) {
     for (var i = 0; i < recipe['nodes'].length; i++) {
         var node = recipe['nodes'][i];
         var gid = node['gid']; // this id is unique for each node - even if there are two of the same type
+	if (typeof workers[gid] == 'undefined')
+	    continue;
         var worker = workers[gid]['worker'];
         if (typeof worker.cleanUp !== 'undefined') {
             worker.cleanUp();
@@ -301,6 +307,8 @@ function createWorker( id, state, node, recipe) {
     case "redcap-measure-get-huge":
         return new RedcapGet(state);
     case 'redcap-measure-put':
+        return new RedcapPut(node, pretendMode);
+    case 'redcap-measure-put-huge':
         return new RedcapPut(node, pretendMode);
     case 'not':
         return new Not(recipe);
@@ -340,6 +348,8 @@ function createWorker( id, state, node, recipe) {
         return new TScore(recipe);
     case 'sum':
         return new Sum(recipe);
+    case 'sum-huge':
+        return new Sum(recipe);
     default:
         console.log("unknown module type: " + id);
 	return null;
@@ -354,15 +364,6 @@ function work(node, recipe) {
     // collect the inputs for this node
     var inputs = getInputValues(node, recipe);
     var enabled = getEnabledValue(node, recipe);
-    if (!enabled) {
-        // if we are not enabled we should not have values in our output (state is special because we need values in there)
-        if (typeof node['outputs'] !== 'undefined') {
-            for (var i = 0; i < node['outputs'].length; i++)
-                delete node['outputs'][i]['value'];
-        }
-
-        return true; // don't do anything, this node is not enabled
-    }
     var outputs = {};
 
     var state = (typeof node['state'] === 'undefined') ? {} : node['state'];
@@ -370,55 +371,68 @@ function work(node, recipe) {
     // collect the list of outputs
     var worker = null;
     if (typeof workers[gid] == 'undefined') { // create a worker for this node
-	worker = createWorker( node['id'], state, node, recipe );
-	// we want to check if any of the inputs or outputs or the internal state changed, if they did not change we are done
-	if (worker !== null)
-            workers[gid] = { 'worker': worker, 'inputs': inputs, 'outputs': outputs, 'state': state, 'id': node['id'] }; 
+        worker = createWorker(node['id'], state, node, recipe);
+        // we want to check if any of the inputs or outputs or the internal state changed, if they did not change we are done
+        if (worker !== null)
+            workers[gid] = { 'worker': worker, 'inputs': inputs, 'outputs': outputs, 'state': state, 'id': node['id'] };
     }
     worker = workers[gid]['worker'];
+
+    if (!enabled) {
+        // if we are not enabled we should not have values in our output (state is special because we need values in there)
+        if (typeof node['outputs'] !== 'undefined') {
+            for (var i = 0; i < node['outputs'].length; i++)
+                delete node['outputs'][i]['value'];
+        }
+        workers[gid]['enabled'] = enabled;
+        return true; // don't do anything, this node is not enabled
+    }
 
     var done = true;
     if (worker !== null) {
         worker.work(inputs, outputs, state);
         if (historyFile != "") {
-	    // to make this more useful detect functions and indicate those in the output as well
-	    var ins  = {}; var ik = Object.keys(inputs);
-	    var outs = {}; var ok = Object.keys(outputs);
-	    for (var i = 0; i < ik.length; i++) {
-		if (typeof inputs[ik[i]] == 'function')
-		    ins[ik[i]] = 'func' + inputs[ik[i]].name;
-		else
-		    ins[ik[i]] = clone(inputs[ik[i]]);
-	    }
-	    for (var i = 0; i < ok.length; i++) {
-		if (typeof outputs[ok[i]] == 'function')
-		    outs[ok[i]] = 'func' + outputs[ok[i]].name;
-		else
-		    outs[ok[i]] = clone(outputs[ok[i]]);
-	    }
-            fs.appendFileSync(historyFile, JSON.stringify({ 
+            // to make this more useful detect functions and indicate those in the output as well
+            var ins = {}; var ik = Object.keys(inputs);
+            var outs = {}; var ok = Object.keys(outputs);
+            for (var i = 0; i < ik.length; i++) {
+                if (typeof inputs[ik[i]] == 'function')
+                    ins[ik[i]] = 'f(' + inputs[ik[i]].name + ")";
+                else
+                    ins[ik[i]] = clone(inputs[ik[i]]);
+            }
+            for (var i = 0; i < ok.length; i++) {
+                if (typeof outputs[ok[i]] == 'function')
+                    outs[ok[i]] = 'f(' + outputs[ok[i]].name + ")";
+                else
+                    outs[ok[i]] = clone(outputs[ok[i]]);
+            }
+            fs.appendFileSync(historyFile, JSON.stringify({
                 'node-id': node['id'],
                 'node-gid': gid,
-                'epoch': epoch, 
-                'inputs': ins, 
-                'outputs': outs }) + "\n" );
+                'epoch': epoch,
+                'inputs': ins,
+                'outputs': outs
+            }) + "\n");
         }
 
         // is the state different? or the outputs? or the inputs?
-        if (isEquivalent(workers[gid]['inputs'], inputs) && 
-            isEquivalent(workers[gid]['outputs'], outputs) && 
-            isEquivalent(workers[gid]['state'], state)) { // do an equivalence check of before and after
+        if (isEquivalent(workers[gid]['inputs'], inputs) &&
+            isEquivalent(workers[gid]['outputs'], outputs) &&
+            isEquivalent(workers[gid]['state'], state) &&
+            workers[gid]['enabled'] === enabled) { // do an equivalence check of before and after
             // no change
             done = done && true;
         } else {
             done = done && false;
         }
-        workers[gid]['inputs']  = clone(inputs);
+        workers[gid]['inputs'] = clone(inputs);
         workers[gid]['outputs'] = clone(outputs);
-        workers[gid]['state']   = clone(state);
+        workers[gid]['state'] = clone(state);
+        workers[gid]['enabled'] = enabled;
 
         // we should set all other values for the outputs to undefined -
-	// if we only get a small number of values we should not have old values in the output ports of this node
+        // if we only get a small number of values we should not have old values in the output ports of this node
         for (var i = 0; i < node['outputs'].length; i++) {
             delete node['outputs'][i]['value'];
         }
