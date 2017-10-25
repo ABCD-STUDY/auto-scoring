@@ -26,7 +26,7 @@ var RedcapGet = function (state) {
 RedcapGet.prototype.startEpoch = function () { }
 
 RedcapGet.prototype.endEpoch = function () {
-    if (this._participants.length % 100 == 0) {
+    if (this._participants.length % 50 == 0) {
         if (this._maxParticipants < this._participants.length) {
             this._maxParticipants = this._participants.length;
         }
@@ -34,11 +34,12 @@ RedcapGet.prototype.endEpoch = function () {
         var doneAlready = this._maxParticipants - this._participants.length;
         readline.clearLine(process.stdout,0);
         readline.cursorTo(process.stdout, 0, null);
-        var hours = (nowTime-this._startTime)/doneAlready * this._participants.length * 0.000000277778;
+        var hours = ((nowTime-this._startTime)/doneAlready) * this._participants.length * 0.000000277778;
         var minutes = hours - Math.floor(hours);
+	var seconds = hours - Math.floor(hours) - Math.floor(minutes);
         process.stdout.write("[" + this._participants.length + "/" + 
                             this._maxParticipants + " ETA: " + 
-                             + hours.toFixed(0) + ":" + (minutes*60).toFixed(0) + "] ");
+                             + Math.floor(hours).toFixed(0) + ":" + ("00" + (minutes*60).toFixed(0)).slice(-2) + ":" + ("00" + (seconds * 60 * 60).toFixed(0)).slice(-2) + "] ");
     }
     this._participants.shift(); // get the next subject
 }

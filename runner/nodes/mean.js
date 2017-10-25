@@ -14,7 +14,7 @@ Mean.prototype.work = function (inputs, outputs, state) {
     var num_present = 0;
     var obj = Object.keys(inputs);
     for (var i = 0; i < obj.length; i++) {
-        if (inputs[obj[i]] === "" || inputs[obj[i]] === undefined) {
+        if (inputs[obj[i]] === undefined || inputs[obj[i]].trim() === "") {
             num_missing = num_missing + 1;
             continue;
         }
