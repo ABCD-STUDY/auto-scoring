@@ -1,0 +1,231 @@
+
+@keyframes move {
+    0% { offset-distance: 0; }
+    100% { offset-distance: 100%; }
+}
+
+::-webkit-scrollbar {
+    height: 12px;
+    width: 12px;
+    background: #333;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #555;
+    -webkit-border-radius: 1ex;
+    -webkit-box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.75);
+}
+
+::-webkit-scrollbar-corner {
+    background: #333;
+}
+
+
+
+#save-new-recipe {
+    height: 20px;
+    line-height: 0.5;
+}
+#create-new-recipe {
+    height: 20px;
+    line-height: 0.5;
+}
+#delete-recipe {
+    height: 20px;
+    line-height: 0.5;
+}
+
+.input-item:hover {
+    stroke: none;
+    fill: white;
+}
+.input-item {
+    stroke: none;
+    fill: black;
+}
+.output-item:hover {
+    stroke: none;
+    fill: white;
+}
+.output-item {
+    stroke: none;
+    fill: black;
+}
+g.highlight {
+    stroke: white;
+    fill: white;
+}
+
+.draggable {
+    stroke: black;
+}
+.list-item-group-title {
+    font-size: 14pt;
+    line-height: 1.6em;
+}
+.list-item-group-entry {
+    font-size: 12pt;
+    margin-left: 10px;
+    padding-left: 2px;
+    line-height: 1.3em;
+    border-top: 1px solid grey;
+}
+
+.list-item-group-entry:hover {
+    //background-color: #222;
+    color: white;
+    background: linear-gradient(#222, #111, #222, #222, #222, #222, #222, #222, #111, #000);
+}
+.btn-interface {
+    background-color: #333;
+    color: gray;
+    border: 1px solid darkgray;
+}
+.btn-interface:hover {
+    color: white;
+}
+/*#right:after {
+    content: '';
+    display: block;
+    -moz-box-shadow: inset 0 0 15px #000;
+    -webkit-box-shadow: inset 0 0 15px #000;
+    box-shadow: inset 0 0 15px #000;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}*/
+			 
+
+text {
+    font-family: sans-serif;
+    pointer-events: none;
+}
+.link line {
+    stroke: #999;
+    stroke-opacity: 0.6;
+}
+
+.node circle {
+    stroke: #fff;
+    stroke-width: 1.5px;
+}
+
+body {
+    font-family: 'Ubuntu Mono', monospace;
+    font-size: 12px;
+    line-height: 1.4em;
+    color: #999;
+    background-color: #313638;
+}
+#listofuploads.modal-backdrop {
+    display: none !important;
+}
+
+
+.start-page h1 {
+   color: #808080;
+   font-family: 'Lato', sans-serif;
+   font-size: 54px;
+   font-weight: 300;
+   line-height: 58px;
+   margin: 0 0 58px;
+   border-bottom: double #808080;
+   padding-bottom: 30px;
+}
+.start-page h2 {
+   color: #ffffff;
+   font-family: 'Lato', sans-serif;
+   font-size: 34px;
+   font-weight: 300;
+   line-height: 48px;
+   margin: 0 0 48px;
+   padding-bottom: 30px;
+}
+.start-page p {
+   color: #808080;
+   font-family: 'Open Sans', Arial, sans-serif;
+   font-size: 16px;
+   line-height: 26px;
+   text-indent: 30px;
+   margin: 0;
+}
+
+.start-page a {
+   color: #fe921f;
+   text-decoration: underline;
+}
+
+.start-page a:hover { color: #808080 }
+.start-page .date {
+      background: #fe921f;
+      color: #ffffff;
+      display: inline-block;
+      font-family: 'Lato', sans-serif;
+      font-size: 12px;
+      font-weight: bold;
+      line-height: 12px;
+      letter-spacing: 1px;
+      margin: 0 0 30px;
+      padding: 10px 15px 8px;
+      text-transform: uppercase;
+}
+
+.start-page .date2 {
+    color: #808080;
+    background: #fff;
+    display: inline-block;
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    font-size: 18px;
+    line-height: 22px;
+    margin: 0 0 20px 18px;
+    padding: 10px 12px 8px;
+    position: absolute;
+    bottom: -36px;
+}
+.upload-group {
+    border-bottom: 1px solid gray;
+    padding: 5px;
+}
+
+.upload-item {
+    background-color: lightblue;
+    padding: 5px;
+    margin-bottom: 5px;
+    border-radius: 2px;
+}
+.fileinput-button {
+    margin-bottom: 10px;
+}
+h3 {
+    margin-top: 5px;
+}
+
+.custom-menu {
+    display: none;
+    z-index: 1000;
+    position: absolute;
+    overflow: hidden;
+    border: 1px solid #CCC;
+    white-space: nowrap;
+    font-family: sans-serif;
+    background: #FFF;
+    color: #333;
+    border-radius: 5px;
+    padding: 0;
+}
+
+/* Each of the items in the list */
+.custom-menu li {
+    padding: 8px 12px;
+    cursor: pointer;
+    list-style-type: none;
+    transition: all .3s ease;
+    user-select: none;
+}
+
+.custom-menu li:hover {
+    background-color: #DEF;
+}
