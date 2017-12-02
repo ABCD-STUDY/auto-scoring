@@ -52,14 +52,14 @@ function clone(obj) {
 }
 
 // sends scores back to redcap
-function sendToREDCap( scores ) {
+function sendToREDCap(scores) {
     if (this._pretendMode == true) {
-	for (var i = 0; i < scores['scores'].length; i++) {
-	    scores['scores'][i]['_send_marker'] = 1; // pretend to have done something
-	}
-	return; // don't do anything
+        for (var i = 0; i < scores['scores'].length; i++) {
+            scores['scores'][i]['_send_marker'] = 1; // pretend to have done something
+        }
+        return; // don't do anything
     }
-    
+
     // we should send a batch of the scores to REDCap, remove those from the list that we have already
     // sent out
     // How to prevent too fast send operations? For now hope the program is slow enough...
@@ -173,14 +173,14 @@ function sendToREDCap( scores ) {
         var num = 0;
         for (var j = 0; j < events.length; j++) {
             num = num + localScores[site][events[j]].length;
-	    var event = events[j];
+            var event = events[j];
             thisSiteData.push.apply(thisSiteData, localScores[site][events[j]]);
             queue.push({ token: tokens, self: this, site: site, scores: localScores[site][events[j]] }, (function (site, num, event) {
                 return function (err) {
-		    if (num == 1) 
-			console.log("Finished sending " + num + " data set for site " + site + " (" + event + ").");
-		    else
-			console.log("Finished sending " + num + " data sets for site " + site + " (" + event + ").");
+                    if (num == 1)
+                        console.log("Finished sending " + num + " data set for site " + site + " (" + event + ").");
+                    else
+                        console.log("Finished sending " + num + " data sets for site " + site + " (" + event + ").");
                 };
             })(site, num, event));
         }
@@ -194,22 +194,22 @@ RedcapPut.prototype.addResult = function (r) {
     for (var i = 0; i < this._results.length; i++) {
         if (r['id_redcap'] === this._results[i]['id_redcap'] &&
             r['redcap_event_name'] === this._results[i]['redcap_event_name']) {
-                // add the values to this event
-                var keys = Object.keys(r);
-                for (var j = 0; j < keys.length; j++) {
-                    if (keys[j] === 'id_redcap' || keys[j] === 'redcap_event_name')
-                        continue;
-                    this._results[i][keys[j]] = r[keys[j]];
-                }
-                found = true;
-                break;
+            // add the values to this event
+            var keys = Object.keys(r);
+            for (var j = 0; j < keys.length; j++) {
+                if (keys[j] === 'id_redcap' || keys[j] === 'redcap_event_name')
+                    continue;
+                this._results[i][keys[j]] = r[keys[j]];
+            }
+            found = true;
+            break;
         }
     }
     if (!found) {
         this._results.push(r);
     }
     if ((this._results.length % this._batchSendSize) == 0) {
-        sendToREDCap( { scores: this._results } );
+        sendToREDCap({ scores: this._results });
     }
 }
 
