@@ -50,7 +50,7 @@ Save and load recipes from the select2 control on the top left of the page. Only
 
 It might happen that a recipe applies to more than one set of input variables. Usually one can make a copy of the initial recipe (Save As...) and change the values to create the second instance of the recipe for the new set of input variables. This approach is not very practical if there are many copies that need to be created. What would be required is a recipe that can change another recipe replacing the existing set of items with new sets. This 'change of a recipe' recipe is called a meta-level-1 recipe. 
 
-It is now possible to create a meta-level-1 recipe. These recipes consist of a single node that references the existing recipe and a list of sets of replacement state variables. Running a meta-level-1 recipe will run the referenced meta-level-0 recipes one after another, each time replacing the state variables in the recipe with the once listed in the meta-level-1 node. Here an example for the content of the 'control' field of the meta-level-1 node:
+It is now possible to create a meta-level-1 recipe. These recipes consist of a single node that references the existing recipe and a list of sets of replacement state variables. Running a meta-level-1 recipe will run the referenced meta-level-0 recipe several times, each time replacing the state variables in the recipe with the once listed in the meta-level-1 nodes control field. Here an example for the content of the control field of the meta-level-1 node:
 
 ```JSON
 [
@@ -72,8 +72,7 @@ It is now possible to create a meta-level-1 recipe. These recipes consist of a s
   }
 ]
 ```
-The above example will replace the 'item4' state variable of the node identified by a gid of 'fce410bc-cab1-4277-ace8-442af2c0ff0f' two times. At the same time it will also replace the value of item4 of the node with the reference '07fcf40e-2df5-4bae-8c1d-fbc20395223b'. In this particular case those two nodes are the REDCap-Get and REDCap-Put nodes. Replacing these values will apply the same computation to these sets of variables.
-
+The above example will replace the 'item4' state variable of the node identified by the identifier (gid) 'fce410bc-cab1-4277-ace8-442af2c0ff0f' two times. At the same time it will also replace the value of item4 of the node with the identifier '07fcf40e-2df5-4bae-8c1d-fbc20395223b'. In this particular case those two nodes are the REDCap-Get and REDCap-Put nodes. Replacing the values can apply the same computation to these two sets of variables.
 
 ### Debugging a recipe
 The "Debug" menu entry will start a new visual debugging session. During the session the runner will be called intermittendly to create a full history of a run. The web-page shows at each step the value of the currently evaluated node.
