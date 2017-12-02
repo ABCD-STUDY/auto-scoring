@@ -20,6 +20,7 @@ var RedcapGet = function (state) {
     this._listOfAllowedEvents     = [];
     this._startTime               = new Date().getTime();
     this._maxParticipants         = 0;
+    this._participantsShifted     = 0;
 };
 
 // gets a notification if a new epoch started - not used for this node
@@ -28,20 +29,21 @@ RedcapGet.prototype.startEpoch = function () { }
 RedcapGet.prototype.endEpoch = function () {
     if (this._participants.length % 50 == 0) {
         if (this._maxParticipants < this._participants.length) {
-            this._maxParticipants = this._participants.length;
+            this._maxParticipants = this._participants.length + this._participantsShifted;
         }
-        var nowTime     = new Date().getTime();
+        var nowTime = new Date().getTime();
         var doneAlready = this._maxParticipants - this._participants.length;
-        readline.clearLine(process.stdout,0);
+        readline.clearLine(process.stdout, 0);
         readline.cursorTo(process.stdout, 0, null);
-        var hours = ((nowTime-this._startTime)/doneAlready) * this._participants.length * 0.000000277778;
-        var minutes = hours - Math.floor(hours);
-	var seconds = hours - Math.floor(hours) - Math.floor(minutes);
-        process.stdout.write("[" + this._participants.length + "/" + 
-                            this._maxParticipants + " ETA: " + 
-                             + Math.floor(hours).toFixed(0) + ":" + ("00" + (minutes*60).toFixed(0)).slice(-2) + ":" + ("00" + (seconds * 60 * 60).toFixed(0)).slice(-2) + "] ");
+        var hours = ((nowTime - this._startTime) / doneAlready) * this._participants.length * 0.000000277778;
+        var minutes = Math.floor((hours - Math.floor(hours)) * 60);
+        var seconds = Math.floor((hours - Math.floor(hours) - (minutes / 60)) * 60 * 60);
+        process.stdout.write("[" + this._participants.length + "/" +
+            this._maxParticipants + " ETA: " +
+            + Math.floor(hours).toFixed(0) + ":" + ("00" + (minutes).toFixed(0)).slice(-2) + ":" + ("00" + (seconds).toFixed(0)).slice(-2) + "] ");
     }
     this._participants.shift(); // get the next subject
+    this._participantsShifted = this._participantsShifted + 1;
 }
 
 RedcapGet.prototype.readyForEpoch = function () {
@@ -96,6 +98,7 @@ RedcapGet.prototype.work = function (inputs, outputs, state) {
         var val = entry[state[i]['value']];
         outputs[state[i]['value']] = val;
     }
+    //console.log("input data -> " + JSON.stringify(outputs));
 };
 
 // WIP: we need to get some information from REDCap first before we will be able to
