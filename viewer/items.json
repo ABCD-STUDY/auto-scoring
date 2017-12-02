@@ -1,5 +1,19 @@
 [
     { 
+		"name": "Meta-Level1",
+		"id": "meta-replace",
+		"group": "Input",
+		"description": "Create a list of auto-scoring recipes",
+		"inputs": [
+		],
+		"outputs": [
+		],
+		"state": [
+			{ "name": "recipe", "type": "text" },
+			{ "name": "control", "type": "textarea" }
+		]
+	},
+	{ 
 	"name": "REDCap Get",
 	"id": "redcap-measure-get",
 	"group": "Input",

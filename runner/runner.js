@@ -42,6 +42,7 @@ var Maximum        = require("./nodes/maximum.js")
 var Minimum        = require("./nodes/minimum.js")
 var Filter         = require("./nodes/filter.js")
 var TScore         = require("./nodes/t-score.js")
+var MetaReplace    = require("./nodes/meta-replace.js")
 
 var exportFileName = "";
 // if we are asked to debug we will store the evaluation of the graph into this file
@@ -350,6 +351,9 @@ function createWorker( id, state, node, recipe) {
         return new Sum(recipe);
     case 'sum-huge':
         return new Sum(recipe);
+    case 'meta-replace':
+	var p = require('path').dirname(require.main.filename);
+        return new MetaReplace(p, this);
     default:
         console.log("unknown module type: " + id);
 	return null;
