@@ -253,6 +253,11 @@ RedcapPut.prototype.work = function (inputs, outputs, state) {
         typeof data['redcap_event_name'] === 'undefined' || data['redcap_event_name'] === "" ||
         typeof data['redcap_data_access_group'] === 'undefined' || data['redcap_data_access_group'] === "" ) {
         //console.log("redcap_put: insufficient data, require id_redcap, redcap_event_name, and redcap_data_access_group");
+        if ( (typeof data['id_redcap'] !== 'undefined' && data['id_redcap'] !== "") ||
+             (typeof data['redcap_event_name'] !== 'undefined' && data['redcap_event_name'] !== "") ||
+             (typeof data['redcap_data_access_group'] !== 'undefined' && data['redcap_data_access_group'] !== "") ) {
+            console.log('redcap_put: insufficient data, required are id_redcap, redcap_event_name and redcap_data_access_group')
+        }
     } else {
         if (Object.keys(data).length > 3) {
             this._lastData = data;

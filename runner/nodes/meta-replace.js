@@ -35,6 +35,12 @@ MetaReplace.prototype.work = function (inputs, outputs, state) {
 
     // look for this recipe, if you find it read and replace the information inside by the control structure
     if (fs.existsSync(filename)) {
+
+	if (this._control.length == 0){
+	    console.log("nothing more can be done");
+	    return;
+	}
+	
         var recipe_code = JSON.parse(fs.readFileSync(filename, 'utf8'));
         var c = this._control[0]; // will advance to the next
         console.log("META-LEVEL instance " + this._control.length);
