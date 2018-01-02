@@ -89,6 +89,14 @@ echo(']; </script>');
         <li><a href="/index.php" title="Back to report page">Report</a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
+        <li>
+    <form class="navbar-form navbar-left" role="search">
+       <div class="form-group">
+           <input type="text" class="form-control" placeholder="Search" id="search-field">
+       </div>
+    </form>
+        </li>
+    
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span id="session-active">User</span> <span class="caret"></span></a>
           <ul class="dropdown-menu">
@@ -120,6 +128,7 @@ echo(']; </script>');
   <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
   <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
   <script src="js/jquery.ui.touch-punch.min.js"></script>  
+  <script src="js/geopattern-1.2.3.min.js"></script>
     
   <!-- Bootstrap Core JavaScript -->
   <script src="js/bootstrap.min.js"></script>
@@ -135,8 +144,26 @@ echo(']; </script>');
               if (typeof recipes[i]['envelope'] !== 'undefined' && recipes[i]['envelope'].length > 0 && typeof recipes[i]['envelope'][0]['lastSaveAtDate'] !== 'undefined') {
                   dat = '[' + recipes[i]['envelope'][0]['lastSaveAtDate'].slice(0,10) + ']';
               }
-              jQuery('#recipes').append('<div class="panel panel-default block" recipe="'+ recipes[i]['name'] + '"><div class="panel-heading"><span class="recipe-counter">Recipe ' + i + '</span><span class="recipe-date pull-right">'+ dat +'</span></div>' + '<div class="panel-body image_container">' + '<img class="image" src="viewer/recipes/' + recipes[i]['name'] + '.png"/>' + '<div class="edit-icon"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></div>' + '</div>' + '<div class="panel-footer"><span class="recipe-name">'+ recipes[i]['name'] +'</span><span class="recipe-user-name pull-right">' + d + '</span></div>' +  '</div>');
+              jQuery('#recipes').append('<div class="panel panel-default block" recipe="'+ recipes[i]['name'] + '"><div class="panel-heading"><span class="recipe-counter">Recipe ' + i + '</span><span class="recipe-date pull-right">'+ dat +'</span></div>' + '<div class="panel-body image_container geopattern" author="'+d+'">' + '<img class="image" src="viewer/recipes/' + recipes[i]['name'] + '.png" onerror="this.style.display=\'none\'"/>' + '<div class="edit-icon"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></div>' + '</div>' + '<div class="panel-footer"><span class="recipe-name">'+ recipes[i]['name'] +'</span><span class="recipe-user-name pull-right">' + d + '</span></div>' +  '</div>');
           }
+          jQuery('.geopattern').each(function() {
+              jQuery(this).geopattern(jQuery(this).attr('author'));
+          });
+
+          jQuery('#search-field').on('keyup', function(e) {
+              var t = jQuery('#search-field').val();
+              console.log("search now:" + t);
+              jQuery('#recipes').children().each(function(i,d) {
+                  var pat = new RegExp(t,'i');
+                  var tt = jQuery(d).text();
+                  if (tt.match(pat)) {
+                      jQuery(d).show();
+                  } else {
+                      jQuery(d).hide();
+                  }
+                  //console.log(jQuery(d).text());
+              });
+          });
       });
 
       jQuery('body').on('click', '.edit-icon', function() {
