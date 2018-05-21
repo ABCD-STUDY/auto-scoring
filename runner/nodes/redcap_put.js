@@ -15,6 +15,11 @@ var RedcapPut = function (n, pretendMode) {
     this._lastData = null;
     this._batchSendSize = 400; // every 200 participants send something to REDCap
     this._pretendMode = pretendMode;
+    if (pretendMode) {
+        console.log("enable pretend mode, nothing will be forwarded...");
+    } else {
+        console.log("pretend mode off, data is forwarded...");
+    }        
 };
 
 function clone(obj) {
@@ -52,11 +57,12 @@ function clone(obj) {
 }
 
 // sends scores back to redcap
-function sendToREDCap(scores) {
-    if (this._pretendMode == true) {
+function sendToREDCap(scores, pretendMode) {
+    if (pretendMode == true) {
         for (var i = 0; i < scores['scores'].length; i++) {
             scores['scores'][i]['_send_marker'] = 1; // pretend to have done something
         }
+        console.log("Pretend mode send...");
         return; // don't do anything
     }
 
@@ -72,6 +78,7 @@ function sendToREDCap(scores) {
     for (var i = 0; i < scores['scores'].length; i++) {
         if (typeof scores['scores'][i]['redcap_data_access_group'] === 'undefined') {
             console.log("ERROR: no redcap_data_access_group available in imported data");
+            continue;
         }
         var site = scores['scores'][i]['redcap_data_access_group'];
         var event = scores['scores'][i]['redcap_event_name'];
@@ -155,7 +162,7 @@ function sendToREDCap(scores) {
             }
         });
         callback();
-    }, 1); // Run one simultaneous download
+    }, 2); // Run one simultaneous download
 
     // is called after all the values have been pulled
     queue.drain = (function (self) {
@@ -209,13 +216,13 @@ RedcapPut.prototype.addResult = function (r) {
         this._results.push(r);
     }
     if ((this._results.length % this._batchSendSize) == 0) {
-        sendToREDCap({ scores: this._results });
+        sendToREDCap({ scores: this._results }, this._pretendMode);
     }
 }
 
 RedcapPut.prototype.cleanUp = function () {
     // a change to print out results, or to send things off to someone else
-    sendToREDCap( { scores: this._results } );
+    sendToREDCap( { scores: this._results }, this._pretendMode);
     console.log("Results after sending (" + this._results.length + "): \n" + JSON.stringify(this._results, null, '  '));
 }
 

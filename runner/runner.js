@@ -23,6 +23,7 @@ var path = require('path');
 
 var Not            = require("./nodes/not.js")
 var Equal          = require("./nodes/equal.js")
+var NotEqual       = require("./nodes/notequal.js")
 var RedcapGet      = require("./nodes/redcap_get.js")
 var RedcapPut      = require("./nodes/redcap_put.js")
 var Mean           = require("./nodes/mean.js")
@@ -315,10 +316,14 @@ function createWorker( id, state, node, recipe) {
         return new Not(recipe);
     case 'filter':
         return new Filter(recipe);
+    case 'mean-huge':
+        return new Mean(recipe);
     case 'mean':
         return new Mean(recipe);
     case 'equal':
         return new Equal(recipe);
+    case 'notequal':
+        return new NotEqual(recipe);
     case 'smaller-equal':
         return new SmallerEqual(recipe);
     case 'greater-equal':

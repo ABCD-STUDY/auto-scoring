@@ -1,3 +1,18 @@
+.timing {
+    position: absolute;
+    margin-top: -67px;
+    left: 5px;
+    background-color: black;
+    color: white;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 2px;
+    border-radius: 3px;
+}
+.timingHover {
+    box-shadow: 0px 0px 6px #000;    
+}
+
 .block {
     width: 300px;
     height: 300px;
@@ -60,8 +75,38 @@
 }
 .panel {
     overflow: hidden;
+    position: relative;
 }
 .panel:hover {
     box-shadow: black 0px 0px 4px;
     transition: all 0.2s ease-in-out;
+}
+.log {
+    position: absolute;
+    top: 210px;
+    left: 5px;
+    background-color: #222;
+    color: white;
+    padding-right: 5px;
+    padding-left: 5px;
+    border-radius: 3px;
+}
+.loader {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    border: 16px solid #f3f3f3; /* Light grey */
+    border-top: 16px solid #3498db; /* Blue */
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    margin-top: -60px;
+    margin-left: -60px;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
