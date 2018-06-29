@@ -527,42 +527,42 @@ function fillItems() {
 // react to state value changes
 function setupStateValues() {
     jQuery('#left-down').on('change', '.state-input', function(a) {
-	var stateVariable = jQuery(this).parent().find('label').text();
-	var newValue = jQuery(a.target).val();
-	var parentID = jQuery(a.target).parent().attr('parent-id');
-	// get the state from this element
-	var state = null;
-	var stateParent = null;
-	jQuery.each(jQuery('#right_svg g'), function(index, value) {
-	    if (jQuery(value).attr('gid') == parentID) {
-		state = JSON.parse(jQuery(value).attr('state'));
-		stateParent = value;
+	    var stateVariable = jQuery(this).parent().find('label').text();
+	    var newValue = jQuery(a.target).val();
+	    var parentID = jQuery(a.target).parent().attr('parent-id');
+	    // get the state from this element
+	    var state = null;
+	    var stateParent = null;
+	    jQuery.each(jQuery('#right_svg g'), function(index, value) {
+	        if (jQuery(value).attr('gid') == parentID) {
+		        state = JSON.parse(jQuery(value).attr('state'));
+		        stateParent = value;
+	        }
+	    });
+	    console.log("state is: " + JSON.stringify(state));
+	    // now update the state
+	    for (var i = 0; i < state.length; i++) {
+	        if (state[i]['name'] == stateVariable) {
+		        state[i]['value'] = newValue;
+	        }
 	    }
-	});
-	console.log("state is: " + JSON.stringify(state));
-	// now update the state
-	for (var i = 0; i < state.length; i++) {
-	    if (state[i]['name'] == stateVariable) {
-		state[i]['value'] = newValue;
+	    // attach new state again to the graphical item
+	    jQuery(stateParent).attr('state', JSON.stringify(state));
+        
+	    // the state also has to be entered into the nodes representation
+	    for (var i = 0; i < nodes.length; i++) {
+	        if (nodes[i]['gid'] == parentID) {
+		        // now find the correct state variable
+		        for (var j = 0; j < nodes[i]['state'].length; j++) {
+		            if (nodes[i]['state'][j]['name'] == stateVariable) {
+			            nodes[i]['state'][j]['value'] = newValue;
+			            break;
+		            }
+		        }
+		        break;
+	        }
 	    }
-	}
-	// attach new state again to the graphical item
-	jQuery(stateParent).attr('state', JSON.stringify(state));
-
-	// the state also has to be entered into the nodes representation
-	for (var i = 0; i < nodes.length; i++) {
-	    if (nodes[i]['gid'] == parentID) {
-		// now find the correct state variable
-		for (var j = 0; j < nodes[i]['state'].length; j++) {
-		    if (nodes[i]['state'][j]['name'] == stateVariable) {
-			nodes[i]['state'][j]['value'] = newValue;
-			break;
-		    }
-		}
-		break;
-	    }
-	}
-	
+	    
     });
 }
 
@@ -673,10 +673,10 @@ function createCurrentGraph( rep ) {
     // delete old nodes
     var existingNodes = jQuery('#right_svg g');
     for (var i = 0; i < existingNodes.length; i++) {
-	if ( typeof jQuery(existingNodes[i]).attr('class') !== 'undefined'
-	     && jQuery(existingNodes[i]).attr('class').indexOf('movable') !== -1) {
-  	    jQuery(existingNodes[i]).children().remove();
-	}
+	    if ( typeof jQuery(existingNodes[i]).attr('class') !== 'undefined'
+	         && jQuery(existingNodes[i]).attr('class').indexOf('movable') !== -1) {
+  	        jQuery(existingNodes[i]).children().remove();
+	    }
     }
     jQuery('#connects').children().remove();
     nodes = [];
@@ -684,9 +684,9 @@ function createCurrentGraph( rep ) {
     
     // now add new nodes
     for (var i = 0; i < rep['nodes'].length; i++) {
-	jQuery('#right_svg').append(
-	    createGraphicForItem(rep['nodes'][i], null)
-	);
+	    jQuery('#right_svg').append(
+	        createGraphicForItem(rep['nodes'][i], null)
+	    );
     }
     connections = rep['connections'];
     createConnections();
@@ -1193,16 +1193,16 @@ jQuery(document).ready(function() {
 		var state = getCurrentGraph();
 		jQuery.ajax({
 			url: 'getRecipes.php?action=save&name=' + jQuery('#new-name').val().replace(/\s+/g, '_'),
-			data: { 'state': JSON.stringify(state) },
+			data: { 'state': encodeURIComponent(JSON.stringify(state)) },
 			dataType: 'json',
 			method: 'POST'
 		});
 		// create a screenshot of this recipe and save as well
 		createScreenshot();
-
+        
 		jQuery('#save-recipe-dialog').modal('hide');
 	});
-
+    
     jQuery('#delete-recipe').click(function() {
 	var id = jQuery('#recipes-list option:selected').attr('state-id');
 	jQuery.get('getRecipes.php?action=delete&name=' + id, function(data) {

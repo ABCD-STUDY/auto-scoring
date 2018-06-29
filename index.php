@@ -231,7 +231,16 @@ echo(']; </script>');
        jQuery.getJSON('getLog.php', { 'action': "list" }, function(data) {
            // get a list of files with a log
            for (var i = 0; i < data.length; i++) {
-               jQuery('#recipes').find("div[recipe='" + data[i] + "']").append("<div class=\"log\">log</div>");
+               var name = data[i][0];
+               var ctime = new Date(Date.parse(data[i][1]));
+               var datediff = Math.floor((Math.abs(new Date() - ctime)/1000)/60);
+               var logClass = "log";
+               var te = "log";
+               if (datediff < 5) {
+                   logClass = logClass + " log-active";
+                   te = "log running";
+               }
+               jQuery('#recipes').find("div[recipe='" + name + "']").append("<div class=\""+logClass+"\">" + te + "</div>");
            }
        });
 

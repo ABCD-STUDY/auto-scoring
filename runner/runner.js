@@ -43,6 +43,7 @@ var Maximum        = require("./nodes/maximum.js")
 var Minimum        = require("./nodes/minimum.js")
 var Filter         = require("./nodes/filter.js")
 var TScore         = require("./nodes/t-score.js")
+var Arithmetic     = require("./nodes/arithmetic.js")
 var MetaReplace    = require("./nodes/meta-replace.js")
 
 var exportFileName = "";
@@ -356,6 +357,8 @@ function createWorker( id, state, node, recipe) {
         return new Sum(recipe);
     case 'sum-huge':
         return new Sum(recipe);
+    case 'arithmetic':
+        return new Arithmetic(recipe);
     case 'meta-replace':
 	var p = require('path').dirname(require.main.filename);
         return new MetaReplace(p, this);

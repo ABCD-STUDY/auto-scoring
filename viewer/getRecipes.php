@@ -25,6 +25,11 @@ if (isset($_POST['state'])) {
     $state = json_decode(urldecode($_POST['state']), true);
 }
 
+// we should use git to save the recipes over time
+function backup() {
+    shell_exec("cd /var/www/html/applications/auto-scoring/viewer/recipes/; git add *.json && git commit --all -m 'update';");
+}
+
 if ($action == "save") {
     if (!in_array("can-auto-score",$permissions)) {
         echo("{ \"message\": \"permissions denied\" }");
@@ -32,7 +37,7 @@ if ($action == "save") {
     }
     
     // save the state
-    echo ("got save action with: \"".$name . "\" and values: " .json_encode($state));
+    //echo ("got save action with: \"".$name . "\" and values: " .json_encode($state));
     if ($name !== "" && $state !== "") {
         // create a dictionary that contains information about user, date, etc.
         $envelope = array();
@@ -51,6 +56,7 @@ if ($action == "save") {
         $state['envelope'] = $envelope;
         // now save the state
         file_put_contents('recipes/' . $name . '.json', json_encode($state));
+        backup();
     }
     return;
 } elseif ($action == "saveImage") {

@@ -116,9 +116,9 @@ function sendToREDCap(scores, pretendMode) {
 
     // we are called here the first time, work is called every time and done tells us if we done
     var queue = async.queue(function (st, callback) {
-        var token = st.tokens;
-        var self = st.self;
-        var site = st.site;
+        var token  = st.tokens;
+        var self   = st.self;
+        var site   = st.site;
         var scores = st.scores;
         if (typeof st.scores === 'undefined' || st.scores === undefined) {
             return; // no scores to send
@@ -140,7 +140,7 @@ function sendToREDCap(scores, pretendMode) {
             'Content-Type': 'application/x-www-form-urlencoded'
         }
 
-        // The penaly to calling request is that we have to wait here for .5 second
+        // The penalty of calling request is that we have to wait here for .5 second
         // This wait will ensure that we don't flood redcap and bring it down using the API. 
         var waitTill = new Date(new Date().getTime() + 10 * 1000);
         while (waitTill > new Date()) { }
@@ -153,17 +153,50 @@ function sendToREDCap(scores, pretendMode) {
             form: data,
             headers: headers,
             json: true
-        }, function (error, response, body) {
-            if (error || response.statusCode !== 200) {
-                // error case
-                console.log("Error sending data (REDCap): \"" + error + "\", response:\n" + JSON.stringify(response));
-            } else {
-                //callback();
-            }
-        });
+        }, (function( tokens, self, site, num, event, scores ) {
+            return function (error, response, body) { // in case we have an error, try to send again one after another
+                if (error || response.statusCode !== 200) {
+                    // error case
+                    console.log("Error sending data (REDCap): \"" + error + "\", response:\n" + JSON.stringify(response) + "\nTRY SENDING AGAIN");
+                    // It could be that instruments are locked. Find out from the response:
+                    // {"statusCode":400,"body":{"error":"\"NDAR_INVBY7K856D\",\"dim_y_ss_mean_nm\",\"7\",\"This field is located on a form that is locked. You must first unlock this form for this record.\"\n\"NDAR_INVBY7K856D\",\"dim_y_ss_mean_nt\",\"7\",\"This field is located on a form that is locked. You must first unlock this form for this record.\"\n\"NDAR_INVC11YFHZV\",\"dim_y_ss_mean_nm\",\"7\",\"This field is located on a form that is locked. You must first unlock this form for this record.\"\n\"NDAR_INVC11YFHZV\",\"dim_y_ss_mean_nt\",\"7\",\"This field is located on a form that is locked. You must first unlock this form for this record.\"\n\"NDAR_INVDETM0C98\",\"dim_y_ss_mean_nm\",\"7\",\"This field is located on a form that is locked. You must first unlock this form for this record.\"\n\"NDAR_INVDETM0C98\",\"dim_y_ss_mean_nt\",\"7\",\"This field is located on a form that is locked. You must first unlock this form for this record.\"\n\"NDAR_INVEJ1P9J2M\",\"dim_y_ss_mean_nm\",\"7\",\"This field is located on a form that is locked. You must first unlock this form for this record.\"\n\"NDAR_INVEJ1P9J2M\",\"dim_y_ss_mean_nt\",\"7\",\"This field is located on a form that is locked. You must first unlock this form for this record.\"\n\"NDAR_INVFDJ5FNUB\",\"dim_y_ss_mean_nm\",\"7\",\"This field is located on a form that is locked. You must first unlock this form for this record.\"\n\"NDAR_INVFDJ5FNUB\",\"dim_y_ss_mean_nt\",\"7\",\"This field is located on a form that is locked. You must first unlock this form for this record.\""},"headers":{"date":"Fri, 08 Jun 2018 22:32:59 GMT","server":"Apache/2.4.18 (Ubuntu)","expires":"0","cache-control":"no-store, no-cache, must-revalidate","pragma":"no-cache","access-control-allow-origin":"*","redcap-random-text":"3X2Gx9svUJ6KpL3DwhPn9E9nBG9SgJ6P8xepgV","content-length":"1510","connection":"close","content-type":"application/json; charset=utf-8"},"request":{"uri":{"protocol":"https:","slashes":true,"auth":null,"host":"abcd-rc.ucsd.edu","port":443,"hostname":"abcd-rc.ucsd.edu","hash":null,"search":null,"query":null,"pathname":"/redcap/api/","path":"/redcap/api/","href":"https://abcd-rc.ucsd.edu/redcap/api/"},"method":"POST","headers":{"User-Agent":"Super Agent/0.0.1","Content-Type":"application/x-www-form-urlencoded","accept":"application/json","content-length":21065}}}
+                    var errorParts = response['body']['error'].match(/NDAR_INV[^"]+/g);
+                    //console.log("errorParts: " + JSON.stringify(errorParts));
+                    if (errorParts.length > 0) {
+                        var cleanScores = [];
+                        for (var i = 0; i < scores.length; i++) {
+                            if (errorParts.indexOf(scores[i]['id_redcap']) > -1)
+                                continue;
+                            cleanScores.push(scores[i]);
+                        }
+                        scores = cleanScores;
+                        // our assumption is that some of the values we are trying to submit are not working - locked participants
+                        // so we just commit every single value one at a time to see if we can submit other parts
+                        
+                        // if we have a single score, don't try again, it failed already the first time
+                        if (scores.length > 1) {
+                            // it would make more sense here to split the scores into two submissions (half them), that would speed up processing in error cases
+                            // push twice, one the first one - if that fails stop, one the second set (everything else), if the second
+                            // send fails we will remove one again and try again to prevent an endless loop
+                            var oneScore = scores.shift();
+                            queue.push({ token: tokens, self: self, site: site, scores: [oneScore] }, (function (site, num, event, pGUID) {
+                                return function (err) {
+                                    console.log("Finished sending one try again case " + pGUID + " for site " + site + " (" + event + ").");
+                                };
+                            })(site, num, event, oneScore['id_redcap'])); 
+                            queue.push({ token: tokens, self: self, site: site, scores: scores }, (function (site, num, event) {
+                                return function (err) {
+                                    console.log("Finished sending all other cases for site " + site + " (" + event + ").");
+                                };
+                            })(site, num, event)); 
+                        }
+                    }
+                }
+            };
+        })(tokens[site], this, site, num, event, scores) ) ;
         callback();
     }, 2); // Run one simultaneous download
-
+    
     // is called after all the values have been pulled
     queue.drain = (function (self) {
         return function () {
