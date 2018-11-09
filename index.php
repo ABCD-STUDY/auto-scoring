@@ -89,13 +89,13 @@ echo(']; </script>');
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-    <form class="navbar-form navbar-left" role="search">
-       <div class="form-group">
-           <input type="text" class="form-control" placeholder="Search" id="search-field">
-       </div>
-    </form>
+          <form class="navbar-form navbar-left" role="search">
+            <div class="form-group">
+              <input type="text" class="form-control" placeholder="Search" id="search-field">
+            </div>
+          </form>
         </li>
-    
+        
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span id="session-active">User</span> <span class="caret"></span></a>
           <ul class="dropdown-menu">
