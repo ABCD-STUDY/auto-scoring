@@ -361,7 +361,7 @@ function createWorker( id, state, node, recipe) {
         return new Arithmetic(recipe);
     case 'meta-replace':
 	var p = require('path').dirname(require.main.filename);
-        return new MetaReplace(p, this);
+        return new MetaReplace(p, this, pretendMode);
     default:
         console.log("unknown module type: " + id);
 	return null;

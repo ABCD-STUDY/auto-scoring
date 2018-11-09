@@ -1,9 +1,10 @@
 var fs   = require('fs')
 var path = require('path')
 
-var MetaReplace = function (p, master) {
+var MetaReplace = function (p, master, pretendMode) {
     this._master = master;
     this._path = p;
+    this._pretendMode = pretendMode;
     this._control = [];
     this._waitingForData = true;
 };
@@ -86,8 +87,12 @@ MetaReplace.prototype.work = function (inputs, outputs, state) {
         var temp = require('temp').track();
         var tempName = temp.path({ suffix: '.recipe' });
         fs.writeFileSync(tempName, JSON.stringify(recipe_code));
-        // run the runner in a sub-process
-        require('child_process').execSync(require.main.filename + " run " + tempName, { stdio: [0, 1, 2] });
+        // run the runner in a sub-process (check for pretendMode)
+        pM = "";
+        if (this._pretendMode) {
+            pM = " -p ";
+        }
+        require('child_process').execSync(require.main.filename + " run " + pM + tempName, { stdio: [0, 1, 2] });
         console.log("DONE WITH ONE META STEP running: " + require.main.filename + " run " + tempName);
     }
 };
