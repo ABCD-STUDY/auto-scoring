@@ -42,6 +42,7 @@ var Greater        = require("./nodes/greater.js")
 var Maximum        = require("./nodes/maximum.js")
 var Minimum        = require("./nodes/minimum.js")
 var Filter         = require("./nodes/filter.js")
+var Rcode          = require("./nodes/Rcode.js")
 var TScore         = require("./nodes/t-score.js")
 var Arithmetic     = require("./nodes/arithmetic.js")
 var MetaReplace    = require("./nodes/meta-replace.js")
@@ -303,20 +304,22 @@ function doneDone(recipe) {
 // cache all the worker objects to have local persistent worker memory
 var workers = {};
 
-function createWorker( id, state, node, recipe) {
+function createWorker( id, state, node, recipe, gid) {
     switch (id ) {
     case "redcap-measure-get":
         return new RedcapGet(state);
     case "redcap-measure-get-huge":
         return new RedcapGet(state);
     case 'redcap-measure-put':
-        return new RedcapPut(node, pretendMode);
+        return new RedcapPut(node, pretendMode, gid);
     case 'redcap-measure-put-huge':
         return new RedcapPut(node, pretendMode);
     case 'not':
         return new Not(recipe);
     case 'filter':
         return new Filter(recipe);
+    case 'RCode':
+        return new Rcode(recipe);
     case 'mean-huge':
         return new Mean(recipe);
     case 'mean':
@@ -383,7 +386,7 @@ function work(node, recipe) {
     // collect the list of outputs
     var worker = null;
     if (typeof workers[gid] == 'undefined') { // create a worker for this node
-        worker = createWorker(node['id'], state, node, recipe);
+        worker = createWorker(node['id'], state, node, recipe, gid);
         // we want to check if any of the inputs or outputs or the internal state changed, if they did not change we are done
         if (worker !== null)
             workers[gid] = { 'worker': worker, 'inputs': inputs, 'outputs': outputs, 'state': state, 'id': node['id'] };
@@ -577,7 +580,7 @@ let runSetup = (file, options) => {
 		    console.log("Error: unknown node in debugFile");
 		}
 		var state  = (typeof node['state'] === 'undefined') ? {} : node['state'];
-		var worker = createWorker(workers[keys[i]]['id'], state, node, recipe);
+        var worker = createWorker(workers[keys[i]]['id'], state, node, recipe, keys[i]);
 		// after we create a worker we need to copy the existing internal variables over
 		var objs = Object.keys(workers[keys[i]]['worker']);
 		for (var k = 0; k < objs.length; k++) {

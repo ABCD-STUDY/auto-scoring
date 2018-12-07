@@ -40,7 +40,7 @@ RedcapGet.prototype.endEpoch = function () {
         var seconds = Math.floor((hours - Math.floor(hours) - (minutes / 60)) * 60 * 60);
         process.stdout.write("[" + this._participants.length + "/" +
             this._maxParticipants + " ETA: " +
-            + Math.floor(hours).toFixed(0) + ":" + ("00" + (minutes).toFixed(0)).slice(-2) + ":" + ("00" + (seconds).toFixed(0)).slice(-2) + "] ");
+                             + Math.floor(hours).toFixed(0) + ":" + ("00" + (minutes).toFixed(0)).slice(-2) + ":" + ("00" + (seconds).toFixed(0)).slice(-2) + "] " + (new Date).toISOString() + "\n");
     }
     this._participants.shift(); // get the next subject
     this._participantsShifted = this._participantsShifted + 1;
@@ -65,7 +65,7 @@ RedcapGet.prototype.doneDone = function () {
 // inputs and state are read only, outputs can be written
 RedcapGet.prototype.work = function (inputs, outputs, state) {
     if (this._participants.length < 1) {
-        console.log("could not get any participants from REDCap, nothing to do here...");
+        console.log("could not get any participants from REDCap, nothing to do here... [debug: _numCalls: " + this._numCalls + " _participants: " + this._participants.length + "]");
         return;
     }
 

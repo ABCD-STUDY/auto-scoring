@@ -54,7 +54,7 @@ if (isset($_GET['load'])) {
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/select2.min.css">
   <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono" rel="stylesheet">
-
+  
 </head>
 
 <body>
@@ -97,7 +97,7 @@ if (isset($_GET['load'])) {
   <div class="container-fluid">
     <div style="overflow: hidden;">
           <div id="left" style="position: absolute; margin: 0px; margin-left: 10px; left: 4px; top: 67px; bottom: 14px; width: 250px; z-index: 0; display: block; overflow-y: scroll; overflow-x: hidden;">
-             <div id="left-top" style="position: relative; height: 100px; overflow: hidden;">
+             <div id="left-top" style="position: relative; height: 120px; overflow: hidden;">
                   <div style="background: #313638;">
                     <div class="form-control" style="background: #313638; border: 0px; font-size: 2pt;">
                         <button class="btn btn-interface" id="save-new-recipe" data-toggle="modal" data-target="#save-recipe-dialog">Save As</button>
@@ -108,10 +108,12 @@ if (isset($_GET['load'])) {
                          <label for="recipes-list">Load recipe</label>
                          <select id="recipes-list" class="select2" style="width: 100%; background: #313638;"> </select>
                     </div>
+
+                    <center style="border-top: 1px solid grey; margin-top: 40px;">(drag & drop entries &#x21E2)</center>
+                    
                   </div>
              </div>
-             <div id="left-up" style="position: relative; height: 730px; overflow: hidden;">
-    <center style="border-top: 1px solid grey;">(drag & drop entries &#x21E2)</center>
+             <div id="left-up" style="position: relative; height: 530px; overflow: auto;">
              </div>
              <div id="left-down"></div>
           </div>
@@ -198,7 +200,28 @@ if (isset($_GET['load'])) {
   <!-- Make Screenshots for recipes - works in Chrome only -->
   <canvas style="display: none;" id="canvas" width="800" height="800"></canvas>
   <div id="png-container" style="display: none;"></div>
-                                                                                                                         
+
+  <div class="modal fade" role="dialog" id="edit-source-dialog">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+          <h4 class="modal-title">Edit</h4>
+        </div>
+        <div class="modal-body" style="padding: 0;">
+          <div id="editor"># nothing
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" data-dismiss="modal" id="save-source-button">Update source</button>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
+  
+
+  
   <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
   <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
   <script src="js/jquery.ui.touch-punch.min.js"></script>  
@@ -208,6 +231,7 @@ if (isset($_GET['load'])) {
   <script src="js/bootstrap.min.js"></script>
 
   <script src="js/select2.full.min.js"></script>
+  <script src="js/ace-builds/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
   <script type="text/javascript" src="js/all.js"></script>
 
 </body>

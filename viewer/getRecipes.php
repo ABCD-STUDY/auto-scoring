@@ -56,6 +56,26 @@ if ($action == "save") {
         $state['envelope'] = $envelope;
         // now save the state
         file_put_contents('recipes/' . $name . '.json', json_encode($state));
+
+        // this should also update the timing.json file in the root directory
+        $data = json_decode(file_get_contents('../timing.json'), true);
+        $found = false;
+        foreach($data as $dat) {
+            if ($dat['recipe'] == $name) {
+                $found = true;
+                break;
+            }
+        }
+        if (!$found) {
+            // add this recipe to the list of recipes, its new!
+            $data[] = array( "recipe" => $name,
+                             "active" => 0,
+                             "group"  => "",
+                             "order"  => "0"
+            );
+            file_put_contents('../timing.json', json_encode($data));
+        }
+        
         backup();
     }
     return;

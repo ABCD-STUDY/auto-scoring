@@ -8,7 +8,8 @@ var path = require('path');
 //var json = require('json');
 
 
-var RedcapPut = function (n, pretendMode) {
+var RedcapPut = function (n, pretendMode, gid) {
+    this._gid = gid;
     this._node = n; // this contains the list of variables we need to query from REDCap, ask for them initially instead of in the worker
     this._results = [];
     this._currentEpoch = 0;
@@ -57,7 +58,7 @@ function clone(obj) {
 }
 
 // sends scores back to redcap
-function sendToREDCap(scores, pretendMode) {
+function sendToREDCap(scores, pretendMode, gid) {
     if (pretendMode == true) {
         for (var i = 0; i < scores['scores'].length; i++) {
             scores['scores'][i]['_send_marker'] = 1; // pretend to have done something
@@ -220,14 +221,15 @@ function sendToREDCap(scores, pretendMode) {
             num = num + localScores[site][events[j]].length;
             var event = events[j];
             thisSiteData.push.apply(thisSiteData, localScores[site][events[j]]);
-            queue.push({ token: tokens, self: this, site: site, scores: localScores[site][events[j]] }, (function (site, num, event) {
+
+            queue.push({ token: tokens, self: this, site: site, scores: localScores[site][events[j]] }, (function (site, num, event, gid) {
                 return function (err) {
                     if (num == 1)
-                        console.log("Finished sending " + num + " data set for site " + site + " (" + event + ").");
+                        console.log("Finished sending " + num + " data set for site " + site + " (" + event + ") from gid: " + gid + ".");
                     else
-                        console.log("Finished sending " + num + " data sets for site " + site + " (" + event + ").");
+                        console.log("Finished sending " + num + " data sets for site " + site + " (" + event + ") from gid: " + gid + ".");
                 };
-            })(site, num, event));
+            })(site, num, event, gid));
         }
     }
 }
@@ -254,13 +256,13 @@ RedcapPut.prototype.addResult = function (r) {
         this._results.push(r);
     }
     if ((this._results.length % this._batchSendSize) == 0) {
-        sendToREDCap({ scores: this._results }, this._pretendMode);
+        sendToREDCap({ scores: this._results }, this._pretendMode, this._gid);
     }
 }
 
 RedcapPut.prototype.cleanUp = function () {
     // a change to print out results, or to send things off to someone else
-    sendToREDCap( { scores: this._results }, this._pretendMode);
+    sendToREDCap( { scores: this._results }, this._pretendMode, this._gid);
     console.log("Results after sending (" + this._results.length + "): \n" + JSON.stringify(this._results, null, '  '));
 }
 
