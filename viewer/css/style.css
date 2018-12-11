@@ -245,8 +245,7 @@ h3 {
     right: 0;
     bottom: 0;
     left: 0;
-    min-height: 200px;
-    max-height: 800px;
+    min-height: 80%;
 }
 @media (min-width: 768px) {
     .modal-xl {
