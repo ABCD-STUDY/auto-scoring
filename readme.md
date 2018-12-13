@@ -8,6 +8,7 @@ There are some dependencies in the code to pieces used in the ABCD report framew
 
 Latest features:
 
+ - REDCap Get Events: A new node that allows the user to specify an event for which data is pulled from REDCap. This is the first time that auto-scoring instruments can calculate scores with data in different events.
  - meta level recipes: They change other recipes by replacing input and output pairs for nodes. A single recipe can therefore be applied to a larger number of variables.
  - R-code module: Allows the user to use R to compute output variables. This is nice if there is existing R-code. Other languages can also be integrated in the same way.
 
