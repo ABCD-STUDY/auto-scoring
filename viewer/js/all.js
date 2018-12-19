@@ -336,7 +336,7 @@ function clone(obj) {
 
 var wasMoved = false;
 function fillItems() {
-    jQuery.getJSON('items.json', function(data) {
+    jQuery.getJSON('items.json?_=99', function(data) {
 	    items = data;
 	    
 	    // get list of groups
