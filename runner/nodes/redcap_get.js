@@ -157,7 +157,8 @@ RedcapGet.prototype.setupGetAllData = function () {
         form: data,
         headers: headers,
         json: true
-    }, function (error, response, body) {
+    }, (function(self) {
+        return function (error, response, body) {
         self._numCalls--;
         if (error || response.statusCode !== 200) {
             // error case
@@ -219,36 +220,39 @@ RedcapGet.prototype.setupGetAllData = function () {
             form: data,
             headers: headers,
             json: true
-        }, function (error, response, body) {
-            self._numCalls--;
-            if (error || response.statusCode !== 200) {
-                // error case
-                console.log("Error getting data dictionary entries for from REDCap: \"" + error + "\", response:\n" + JSON.stringify(response));
-                return;
-            }
-            // ok, now we know
-            self._dataDictionary = body;
-            self._listOfAllowedEvents = {};
-            for (var i = 0; i < self._dataDictionary.length; i++) {
-                var item = self._dataDictionary[i]['field_name'];
-                var instrument = self._dataDictionary[i]['form_name'];
-                for (var j = 0; j < self._instrumentEventMappings.length; j++) {
-                    // which of the fields we have in listOfItems
-                    if (self._instrumentEventMappings[j]['form'] == instrument) {
-                        if (self._instrumentEventMappings[j]['unique_event_name'] !== "")
-                            self._listOfAllowedEvents[self._instrumentEventMappings[j]['unique_event_name']] = 1;
-                        // could happen several times (one form in several events)
+        }, (function(self) {
+            return function (error, response, body) {
+                self._numCalls--; // is this the correct self?
+                if (error || response.statusCode !== 200) {
+                    // error case
+                    console.log("Error getting data dictionary entries for from REDCap: \"" + error + "\", response:\n" + JSON.stringify(response));
+                    return;
+                }
+                // ok, now we know
+                self._dataDictionary = body;
+                self._listOfAllowedEvents = {};
+                for (var i = 0; i < self._dataDictionary.length; i++) {
+                    var item = self._dataDictionary[i]['field_name'];
+                    var instrument = self._dataDictionary[i]['form_name'];
+                    for (var j = 0; j < self._instrumentEventMappings.length; j++) {
+                        // which of the fields we have in listOfItems
+                        if (self._instrumentEventMappings[j]['form'] == instrument) {
+                            if (self._instrumentEventMappings[j]['unique_event_name'] !== "")
+                                self._listOfAllowedEvents[self._instrumentEventMappings[j]['unique_event_name']] = 1;
+                            // could happen several times (one form in several events)
+                        }
                     }
                 }
+                self._listOfAllowedEvents = Object.keys(self._listOfAllowedEvents);
+                console.log("List of allowed events is: " + JSON.stringify(self._listOfAllowedEvents));
+                self.getAllData(); // now we are ready to request data from REDCap (limited to these events)
+                // what about enroll_total... its not in the list but might be defined for every event... should be removed
+                // TODO: find out which of the input ports are actually connected to something, only those items are used in
+                // the network and need to be in the list of items to map against the form/events.
             }
-            self._listOfAllowedEvents = Object.keys(self._listOfAllowedEvents);
-            console.log("List of allowed events is: " + JSON.stringify(self._listOfAllowedEvents));
-            self.getAllData(); // now we are ready to request data from REDCap (limited to these events)
-            // what about enroll_total... its not in the list but might be defined for every event... should be removed
-            // TODO: find out which of the input ports are actually connected to something, only those items are used in
-            // the network and need to be in the list of items to map against the form/events.
-        })
-    });
+        })(self));
+        }
+    })(self));
 };
 
 RedcapGet.prototype.getAllData = function() {
