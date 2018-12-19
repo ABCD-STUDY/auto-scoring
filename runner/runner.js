@@ -25,6 +25,7 @@ var Not            = require("./nodes/not.js")
 var Equal          = require("./nodes/equal.js")
 var NotEqual       = require("./nodes/notequal.js")
 var RedcapGet      = require("./nodes/redcap_get.js")
+var RedcapGetEvent = require("./nodes/redcap_get_event.js")
 var RedcapPut      = require("./nodes/redcap_put.js")
 var Mean           = require("./nodes/mean.js")
 var Median         = require("./nodes/median.js")
@@ -308,6 +309,8 @@ function createWorker( id, state, node, recipe, gid) {
     switch (id ) {
     case "redcap-measure-get":
         return new RedcapGet(state);
+    case "redcap-measure-get-event":
+        return new RedcapGetEvent(state);
     case "redcap-measure-get-huge":
         return new RedcapGet(state);
     case 'redcap-measure-put':
