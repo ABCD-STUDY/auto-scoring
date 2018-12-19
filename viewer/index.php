@@ -68,22 +68,22 @@ if (isset($_GET['load'])) {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="#">Auto-Scoring Viewer</a>
+      <a style="font-size: 2em;" class="navbar-brand" href="#">Auto-Scoring Viewer</a>
     </div>
 
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
-        <li><a href="/index.php" title="Back to report page">Report</a></li>
-        <li><a href="../index.php" title="Back to auto-scoring page">Back to Auto-Scoring</a></li>
-        <li><a href="#" title="Start a new debugging session" id="start-debugging">Debug</a></li>
+        <li><a style="font-size: 1.5em;" href="/index.php" title="Back to report page">Report</a></li>
+        <li><a style="font-size: 1.5em;" href="../index.php" title="Back to auto-scoring page">Back to Auto-Scoring</a></li>
+        <li><a style="font-size: 1.5em;" href="#" title="Start a new debugging session" id="start-debugging">Debug</a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span id="session-active">User</span> <span class="caret"></span></a>
+          <a style="font-size: 1.5em;" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span id="session-active">User</span> <span class="caret"></span></a>
           <ul class="dropdown-menu">
-            <li><a href="#" onclick="closeSession();">Close Session</a></li>
-            <li><a href="#" onclick="logout();">Logout</a></li>
+            <li><a style="font-size: 1.5em;" href="#" onclick="closeSession();">Close Session</a></li>
+            <li><a style="font-size: 1.5em;" href="#" onclick="logout();">Logout</a></li>
           </ul>
         </li>
       </ul>
