@@ -1,6 +1,12 @@
 //
-// do a redcap_get_event and write the requested values into the output
-// The module gets an redcap id and a fixed event name
+// Do a redcap_get_event and write the requested values into the output.
+// The module gets an redcap id and a fixed event name.
+// TODO: calling REDCap each time for one dataset only is a waste of resources
+//       and leads to REDCap cutting off abcd-report (800 calls per minute limit).
+//       Instead it would be better to get values for multiple participants,
+//       its likely that they will be needed anyway - put them into a cache.
+//       It would be good to create the cache as a singleton. Other module
+//       instances would be able to share their data.
 //
 //var async   = require("async");
 var request = require('request');
@@ -23,6 +29,7 @@ var RedcapGetEvent = function (state) {
     this._currentSite             = "";
     this._startedCall             = false; // track the start of data pulls for the currentPGUID
     this._callsData               = [];
+    this._cache                   = {};    // cache the values from REDCap instead of asking for every small bit, use pGUID and Event as key
 };
 
 // gets a notification if a new epoch started
@@ -138,20 +145,32 @@ RedcapGetEvent.prototype.getAllData = function() {
     var tokens = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../../../code/php/tokens.json'), 'utf8'));
     //var tokens = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../../tokens.json'), 'utf8'));
     if (typeof tokens[this._currentSite] == 'undefined') {
-        console.log("Error: there is no token for the site " + this._currentSite + "\n");
+        console.log("Error: [redcap_get_event] there is no token for the site \"" + this._currentSite + "\". Ignore the request.\n");
+        return;
     }
     
     var token = tokens[this._currentSite];
     var site  = this._currentSite;
     var pGUID = this._currentPGUID;  // get from inputs
     var event = this._currentEvent;  // get from state
+    
+    // maybe this value is already in the cache? In that case we are done here
+    var k = pGUID + event;
+    if (typeof this._cache[k] !== 'undefined') {
+        // we have this value already set and be done with it
+        this._callsData = this._cache[k];
+        return;
+    }
+
+    // we have to get data from REDCap first - we might not need the list of participant - lets get the data for everyone for this site
+    // hope that is not too much data!
     var data = {
         'token': token,
         'content': 'record',
         'format': 'json',
         'type': 'flat',
         'rawOrLabel': 'raw',
-        'records[0]': pGUID,
+        //'records[0]': pGUID,
         'fields[0]': 'id_redcap',
         'fields[1]': 'redcap_event_name',
         'events[0]': event,
@@ -188,7 +207,7 @@ RedcapGetEvent.prototype.getAllData = function() {
         'Content-Type': 'application/x-www-form-urlencoded'
     }
     
-    // The penaly to calling request is that we have to wait here for .1 second
+    // The penalty to calling request is that we have to wait for .1 seconds.
     // This wait will ensure that we don't flood redcap and bring it down using the API. 
     var waitTill = new Date(new Date().getTime() + .1 * 1000);
     while (waitTill > new Date()) { }
@@ -201,7 +220,7 @@ RedcapGetEvent.prototype.getAllData = function() {
         form: data,
         headers: headers,
         json: true
-    }, (function(self) {
+    }, (function(self, pGUID, event) {
         return function (error, response, body) {
             if (error || response.statusCode !== 200) {
                 // error case
@@ -210,11 +229,19 @@ RedcapGetEvent.prototype.getAllData = function() {
                 self._startedCall = false; // we are not in the call anymore and there is no data
                 return;
             }
-            self._callsData = body;
+            //self._callsData = body;
+            // add this data to the cache
+            for (var i = 0; i < body.length; i++) {
+                var k = body[i]['id_redcap'] + body[i]['redcap_event_name'];
+                if (typeof self._cache[k] === 'undefined')
+                    self._cache[k] = body[i];
+                if (body[i]['id_redcap'] === pGUID && body[i]['redcap_event_name'] === event)
+                    self._callsData = body[i]; // and we can return some data here
+            }
             // this._startedCall = false; // do this once we use the data from the body
             //console.log("got data back in callsData " + JSON.stringify(self._callsData));
         };
-    })(this));
+    })(this, pGUID, event));
 }
 
 module.exports = RedcapGetEvent;
