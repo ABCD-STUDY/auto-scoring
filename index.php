@@ -225,7 +225,16 @@ echo(']; </script>');
            if (typeof recipes[i]['envelope'] !== 'undefined' && recipes[i]['envelope'].length > 0 && typeof recipes[i]['envelope'][0]['lastSaveAtDate'] !== 'undefined') {
                dat = '[' + recipes[i]['envelope'][0]['lastSaveAtDate'].slice(0,10) + ']';
            }
-           jQuery('#recipes').append('<div class="panel panel-default block" recipe="'+ recipes[i]['name'] + '"><div class="panel-heading"><span class="recipe-counter">Recipe ' + i + '</span><span class="recipe-date pull-right">'+ dat +'</span></div>' + '<div class="panel-body image_container geopattern" author="'+d+'">' + '<img class="image" src="viewer/recipes/' + recipes[i]['name'] + '.png" onerror="this.style.display=\'none\'"/>' + '<div class="edit-icon"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></div>' + '</div>' + '<div class="panel-footer"><span class="recipe-name">'+ recipes[i]['name'] +'</span><span class="recipe-user-name pull-right">' + d + '</span></div>' + "<div class='timing'>+</div>" + '</div>');
+           jQuery('#recipes').append('<div class="panel panel-default block" recipe="'+
+                                     recipes[i]['name'] + '"><div class="panel-heading"><span class="recipe-counter">Recipe ' +
+                                     i + '</span><span class="recipe-date pull-right">'+
+                                     dat +'</span></div>' + '<div class="panel-body image_container geopattern" author="'+
+                                     d+'">' + '<img class="image" src="viewer/recipes/' +
+                                     recipes[i]['name'] + '.png" onerror="this.style.display=\'none\'"/>' +
+                                     '<div class="edit-icon"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></div>' +
+           //'<div class="quit-icon"><span class="glyphicon glyphicon-stop" aria-hidden="true"></span></div>' +
+                                     '</div>' + '<div class="panel-footer"><span class="recipe-name">'+ recipes[i]['name'] +
+                                     '</span><span class="recipe-user-name pull-right">' + d + '</span></div>' + "<div class='timing'>+</div>" + '</div>');
 
        }
        jQuery.getJSON('getLog.php', { 'action': "list" }, function(data) {
@@ -239,8 +248,9 @@ echo(']; </script>');
                if (datediff < 5) {
                    logClass = logClass + " log-active";
                    te = "log running";
+                   jQuery('#recipes').find("div[recipe='" + name + "']").append("<div class='quit-icon' title='Stop the currently running recipe. This will take 5min, please be patient.'><span class='glyphicon glyphicon-stop' aria-hidden='true'></span></div>");
                }
-               jQuery('#recipes').find("div[recipe='" + name + "']").append("<div class=\""+logClass+"\">" + te + "</div>");
+               jQuery('#recipes').find("div[recipe='" + name + "']").append("<div class=\""+logClass+"\" title=\"Last change date: "+data[i][1]+"\">" + te + "</div>");
            }
        });
 
@@ -334,7 +344,7 @@ echo(']; </script>');
        });
 
    });
-   
+    
    jQuery('body').on('click', '.edit-icon', function() {
        var recipe = jQuery(this).parent().parent().attr('recipe');
        window.open('viewer/index.php?load=' + recipe, '_viewer');
@@ -343,6 +353,22 @@ echo(']; </script>');
        var recipe = jQuery(this).parent().parent().attr('recipe');
        window.open('viewer/index.php?load=' + recipe, '_viewer');
    });
+
+   jQuery('body').on('click', '.quit-icon', function() {
+       var recipe = jQuery(this).parent().parent().attr('recipe');
+       //window.open('viewer/index.php?load=' + recipe, '_viewer');
+       jQuery.getJSON('getTiming.php', { 'action': "stop", 'measure': recipe }, function(data) {
+           console.log("got back " + JSON.stringify(data));
+       });
+   });
+   jQuery('body').on('touchend', '.quit-icon', function() {
+       var recipe = jQuery(this).parent().parent().attr('recipe');
+       //window.open('viewer/index.php?load=' + recipe, '_viewer');
+       jQuery.getJSON('getTiming.php', { 'action': "stop", 'measure': recipe }, function(data) {
+           console.log("got back " + JSON.stringify(data));
+       });
+   });
+
   </script>
   
 

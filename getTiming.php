@@ -104,6 +104,31 @@ if ($action == "get") {
     file_put_contents('timing.json', json_encode($data));
     echo ("{ \"message\": \"Ok\" }");
     return;
+} else if ($action == "stop") {
+    // have this recipe stopped
+    $measure = "";
+    if (isset($_GET['measure'])) {
+        $measure = $_GET['measure'];
+    } else {
+        echo ("{ \"message\": \"Error: no recipe specified\" }");
+        return;
+    }
+    $data = json_decode(file_get_contents('timing.json'), true);
+    $found = false;
+    foreach ($data as &$dat ) {
+        if ($dat['recipe'] == $measure) {
+            $found = true;
+            $dat['stop'] = 1;
+        }
+    }
+    if ($found == false) {
+        echo ("{ \"message\": \"Error: this recipe does not exist (".$measure.")\" }");
+        return;       
+    }
+    file_put_contents('timing.json', json_encode($data));
+    echo ("{ \"message\": \"Ok\" }");
+    return;
 }
+
 
 ?>

@@ -67,7 +67,7 @@ function createGraphicForItem( item, pos ) {
 	    for (var i = 0; i < item['state'].length; i++) {
 	        item['state'][i]['gid'] = id;
 	    }
-	    g.attr('state', JSON.stringify(item['state']));
+	g.attr('state', encodeURIComponent(JSON.stringify(item['state'])));
     }
     
     // the title text
@@ -440,7 +440,7 @@ function fillItems() {
 	    var c = jQuery(this).attr('class').split(" ");
 	    var state = [];
 	    if (jQuery(this).attr('state')) {
-            state = JSON.parse(jQuery(this).attr('state'));
+		state = JSON.parse(decodeURIComponent(jQuery(this).attr('state')));
 	    }
 	    if (c.indexOf("highlight") !== -1) {
 	        // already highlighted
@@ -528,16 +528,19 @@ function fillItems() {
 // react to state value changes
 function setupStateValues() {
     jQuery('#left-down').on('change', '.state-input', function(a) {
-	    var stateVariable = jQuery(this).parent().find('label').text();
-	    var newValue = jQuery(a.target).val();
+	var stateVariable = jQuery(this).parent().find('label').text();
+	var newValue = jQuery(a.target).val();
+	if (jQuery(a.target).is("textarea")) {
+	    newValue = jQuery(a.target).data('text'); // do we need to do something different here for textarea elements?
+	}
 	    var parentID = jQuery(a.target).parent().attr('parent-id');
 	    // get the state from this element
 	    var state = null;
 	    var stateParent = null;
 	    jQuery.each(jQuery('#right_svg g'), function(index, value) {
 	        if (jQuery(value).attr('gid') == parentID) {
-		        state = JSON.parse(jQuery(value).attr('state'));
-		        stateParent = value;
+		    state = JSON.parse(decodeURIComponent(jQuery(value).attr('state')));
+		    stateParent = value;
 	        }
 	    });
 	    console.log("state is: " + JSON.stringify(state));
@@ -548,7 +551,7 @@ function setupStateValues() {
 	        }
 	    }
 	    // attach new state again to the graphical item
-	    jQuery(stateParent).attr('state', JSON.stringify(state));
+   	    jQuery(stateParent).attr('state', encodeURIComponent(JSON.stringify(state)));
         
 	    // the state also has to be entered into the nodes representation
 	    for (var i = 0; i < nodes.length; i++) {
@@ -582,13 +585,15 @@ function addStateDisplay( state ) {
 	    } else if (state[i]['type'] == "textarea") {
 	        var text = (typeof state[i]['value'] !== 'undefined')?state[i]['value']:"";
   	        jQuery('#left-down').append("<div id=\"" + gid + "-" + state[i]['name'] +
-					                    "\" parent-id=\"" + parentID + "\" class=\"form-group\" style=\"width: 200px\"><label title='" + parentID + "'>" +
-					                    state[i]['name'] +
-					                    "</label>" + "<button class=\"btn btn-sm btn-default edit-source-button\" style='float: right;' data-toggle=\"modal\" data-target=\"#edit-source-dialog\">edit</button>" + 
-                                        "<textarea class=\"form-control input-sm state-input\" type=\"textarea\" rows=\"5\" " +
-					                    "placeholder=\"undefined\" value=\"" +
-					                    text + "\">" + text + "</textarea></div>");
-            
+					    "\" parent-id=\"" + parentID + "\" class=\"form-group\" style=\"width: 200px\"><label title='" + parentID + "'>" +
+					    state[i]['name'] +
+					    "</label>" + "<button class=\"btn btn-sm btn-default edit-source-button\" style='float: right;' data-toggle=\"modal\" data-target=\"#edit-source-dialog\">edit</button>" + 
+                                            "<textarea class=\"form-control input-sm state-input\" type=\"textarea\" rows=\"5\" " +
+					    "placeholder=\"undefined\"></textarea></div>");
+		jQuery('#' + gid + "-" + state[i]['name']).find('textarea').val(text);
+		jQuery('#' + gid + "-" + state[i]['name']).find('textarea').attr('value', encodeURIComponent(JSON.stringify(text)));
+		jQuery('#' + gid + "-" + state[i]['name']).find('textarea').data("text", text);
+		
 	    }
     }
 }
@@ -1233,7 +1238,8 @@ jQuery(document).ready(function() {
 
     jQuery('body').on('click', 'button.edit-source-button', function() {
         // add the source code for this source
-        var t = jQuery(this).parent().find('textarea').val();
+        //var t = jQuery(this).parent().find('textarea').val();
+        var t = jQuery(this).parent().find('textarea').data("text");
         editor.setValue(t);
         // remember the id
         jQuery('#save-source-button').attr('source-id', jQuery(this).parent().attr('id'));
@@ -1241,8 +1247,11 @@ jQuery(document).ready(function() {
 
     jQuery('#save-source-button').click(function() {
         var t = editor.getValue();
+	// we need to savely copy the value .. stringify is not enough and it could contain special characters not save to store in a DOM element
+	
         // copy back to the appropriate source
         var source = jQuery('#save-source-button').attr('source-id');
-        jQuery('#'+source).find('textarea').val(t).trigger('change');
+        //jQuery('#'+source).find('textarea').val(t).trigger('change');
+	jQuery('#'+source).find('textarea').data("text", t).trigger('change');
     });
 });
