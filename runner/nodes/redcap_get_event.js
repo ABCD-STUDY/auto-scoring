@@ -62,6 +62,8 @@ RedcapGetEvent.prototype.work = function (inputs, outputs, state) {
     // no doneDone anymore, we are always readyForEpoch
     // we can veto any endEpoch, need to get the data first from REDCap
 
+    //console.log("INPUTS IS: " + JSON.stringify(inputs));
+
     // do we have a connected pGUID?
     var pGUID = "";
     var event = "";
@@ -159,6 +161,8 @@ RedcapGetEvent.prototype.getAllData = function() {
     if (typeof this._cache[k] !== 'undefined') {
         // we have this value already set and be done with it
         this._callsData = this._cache[k];
+        this._startedCall = false; // do this once we use the data from the body
+        //console.log("Found data for this participant: " + JSON.stringify(this._callsData));
         return;
     }
 
@@ -235,10 +239,12 @@ RedcapGetEvent.prototype.getAllData = function() {
                 var k = body[i]['id_redcap'] + body[i]['redcap_event_name'];
                 if (typeof self._cache[k] === 'undefined')
                     self._cache[k] = body[i];
-                if (body[i]['id_redcap'] === pGUID && body[i]['redcap_event_name'] === event)
+                if (body[i]['id_redcap'] === pGUID && body[i]['redcap_event_name'] === event) {
                     self._callsData = body[i]; // and we can return some data here
+                    //console.log("Found values: " + JSON.stringify(self._callsData));
+                }
             }
-            // this._startedCall = false; // do this once we use the data from the body
+            self._startedCall = false; // do this once we use the data from the body
             //console.log("got data back in callsData " + JSON.stringify(self._callsData));
         };
     })(this, pGUID, event));
