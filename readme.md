@@ -10,17 +10,17 @@ Latest features:
 
  - REDCap Get Events: A new node that allows the user to specify an event for which data is pulled from REDCap. This is the first time that auto-scoring instruments can calculate scores with data in different events.
  - meta level recipes: They change other recipes by replacing input and output pairs for nodes. A single recipe can therefore be applied to a larger number of variables.
- - R-code module: Allows the user to use R to compute output variables. This is nice if there is existing R-code. Other languages can also be integrated in the same way.
+ - R-code module: Allows the user to use R to compute output variables. This is useful if there is existing R-code. Other languages could also be integrated this way in the future.
 
 ## Viewer
 
 The viewer is used to create a data flow graph using visual programming. Its design has been influenced by other existing visual data processing interfaces such as the one from ThreeNodes.js and Amira.
 
-Generally data flows from left to right through "connections" between processing steps called "nodes". Each node has a list of incoming ports on the left and outgoing ports on the right (and a list of internal state variables). As an example the compute node calculating the mean of its inputs has 10 input ports that may or may not be connected to something. The three output ports represent the mean of the connected inputs, the number of missing (empty string) connected values and the total number of connected values respectively.
+Generally data flows from left to right through "connections" between processing steps called "nodes". Each node has a list of incoming ports on the left and outgoing ports on the right (and a list of internal state variables). As an example the compute node calculating the mean of its inputs has 10 input ports that may or may not be connected to a node producing data. The three output ports represent the mean of the connected inputs, the number of missing (empty string) connected values and the total number of connected values respectively.
 
 ![The viewer used to edit recipes](https://github.com/ABCD-STUDY/auto-scoring/raw/master/images/viewer.png)
 
-Drag- and drop a node from the list on the left to the canvas to instantiate the node. Drag- and drop using the gray port circles on each node to create a connection. Select a node to get a list of the internal state variables on the left.
+Drag- and drop a node from the list on the left to the canvas to instantiate the node. Drag- and drop using the gray port circles on each node to create a connection. Select a node to get a list of the internal state variables on the left side panel. Right-click on a connection port to delete the connection.
 
 The interface of each node is defined in the items.json file. Here an example of one nodes specification:
 ```JSON
