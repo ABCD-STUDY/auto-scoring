@@ -58,10 +58,25 @@ Every operation on the database is done in three steps. Reading variables from R
 
 #### Reading data from REDCap
 
-There are two modules that read from REDCap. One is "REDCap Get" and the sister node "REDCap Get Huge", which has more space for variables. Drag and drop the module into the recipe viewer. Highlight the node (name on top shows up as white text) and the status variables of the node are displayed on the left side of the viewer.
+There are two modules that read from REDCap. One is "REDCap Get" and the sister node "REDCap Get Huge", which has more space for variables but is otherwise doing the same operation. Drag and drop the module into the recipe viewer, highlight the node (name on top shows up as white text) and the status variables of the node are displayed on the left side of the viewer as "itemX".
 
 ![REDCap Get node](https://github.com/ABCD-STUDY/auto-scoring/raw/master/images/REDCapGet.png)
 
+It is important that the session identifying variables are present. Usually these are added as the first three fields as "id_redcap", "redcap_event_name", and "redcap_data_access_group". 
+
+#### Writing data to REDCap
+
+The "REDCap Put" module (and "REDCap Put Huge") collect data from the data flow graph and "sink" them back into REDCap. In order to write any value in REDCap three fields that identify the participant, session and site are required ("id_redcap", "redcap_event_name", "redcap_data_access_group").
+
+![REDCap Put node](https://github.com/ABCD-STUDY/auto-scoring/raw/master/images/REDCapPut.png)
+
+Notice: The recipe can be run in a "pretend" mode. This will generate all the values in the log files but it will not overwrite any scores in REDCap.
+
+#### How to compute for a specific event only
+
+The "If-Else" module can be used to compare a field with a value. If the comparison works the "true" output of the If-Else module can be connected to the REDCap Put module's orange on/off connection. This special connection port in the upper left corner of each node can be used to disable the module given the current input. A disabled REDCap Put module does not store the currently connected values.
+
+In order to run the recipe for the baseline event only the If-Else can use the "redcap_event_name" value and compare it against the official name of the event "baseline_year_1_arm_1".
 
 
 ### Re-using existing recipes
