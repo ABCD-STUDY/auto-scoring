@@ -52,6 +52,18 @@ In order to remove an individual connection between two ports, right-click on th
 
 Save and load recipes from the select2 control on the top left of the page. Only Chrome browsers are currently able to create a screenshot of the recipe during the save operation. Both the recipe and its picture are stored in the recipes/ folder of the viewer sub-directory.
 
+### Designing recipes
+
+Every operation on the database is done in three steps. Reading variables from REDCap, processing the data and sending it back to other variables in REDCap. If these steps are executed at regular intervals they can fix ongoing issues or calculate derived scores.
+
+#### Reading data from REDCap
+
+There are two modules that read from REDCap. One is "REDCap Get" and the sister node "REDCap Get Huge", which has more space for variables. Drag and drop the module into the recipe viewer. Highlight the node (name on top shows up as white text) and the status variables of the node are displayed on the left side of the viewer.
+
+![REDCap Get node](https://github.com/ABCD-STUDY/auto-scoring/raw/master/images/REDCapGet.png)
+
+
+
 ### Re-using existing recipes
 
 It might happen that a recipe applies to more than one set of input variables. Usually one can make a copy of the initial recipe (Save As...) and change the values to create the second instance of the recipe for the new set of input variables. This approach is not very practical if there are many copies that need to be created. What would be required is a recipe that can change another recipe replacing the existing set of items with new sets. This 'change of a recipe' recipe is called a meta-level-1 recipe. 
