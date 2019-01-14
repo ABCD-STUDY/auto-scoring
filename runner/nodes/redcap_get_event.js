@@ -39,7 +39,7 @@ RedcapGetEvent.prototype.startEpoch = function () {
     this._currentEvent = "";
     this._currentSite = "";
     this._callsData = [];
-    //console.log("startEPOCH");
+    //console.log("start another EPOCH");
 }
 
 RedcapGetEvent.prototype.endEpoch = function () {
@@ -50,8 +50,10 @@ RedcapGetEvent.prototype.endEpoch = function () {
 
 RedcapGetEvent.prototype.readyForEpoch = function () {
     if (this._startedCall) {
+        //console.log("not ready for next epoch: " + this._startedCall);
         return false; // not ready for the next epoch
     }
+    //console.log("ready for mext epoch");
     return true; // we don't block the start of processing
 }
 
@@ -107,8 +109,8 @@ RedcapGetEvent.prototype.work = function (inputs, outputs, state) {
 
     // detect if the values are there and we can copy them to the output
     // copy values to output if we have some
-    //console.log("check callsData length: " + this._callsData.length);
-    if (this._callsData.length > 0) {
+    //console.log("check callsData length: " + this._callsData.length + " callsData: " + JSON.stringify(this._callsData));
+    if (Object.keys(this._callsData).length > 0) {
         for (var i = 0; i < state.length; i++) {
             if (typeof state[i]['value'] === 'undefined')
                 continue
@@ -116,7 +118,7 @@ RedcapGetEvent.prototype.work = function (inputs, outputs, state) {
                 continue; // don't overwrite
             if (state[i]['name'] == "event")
                 continue; // ignore the event for copy back
-            //console.log(JSON.stringify(state[i]));
+            //console.log("WE HAVE SOME DATA: " + JSON.stringify(state[i]));
 
             // get the number for this item
             var parts = state[i]['name'].split("item");
@@ -129,10 +131,10 @@ RedcapGetEvent.prototype.work = function (inputs, outputs, state) {
             // we should have to send this value to the outN in outputs
             // find out if we have to look for a checkbox, in that case ask for the variable instead
             if (outname !== "") {
-                if (typeof this._callsData[0][state[i]['value']] === 'undefined') {
+                if (typeof this._callsData[state[i]['value']] === 'undefined') {
                     outputs[outname] = undefined;
                 } else {
-                    var val = this._callsData[0][state[i]['value']];
+                    var val = this._callsData[state[i]['value']];
                     outputs[outname] = val;
                 }
             }
@@ -144,7 +146,7 @@ RedcapGetEvent.prototype.work = function (inputs, outputs, state) {
 
 RedcapGetEvent.prototype.getAllData = function() {
     // get the configuration for this node
-    var tokens = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../../../code/php/tokens.json'), 'utf8'));
+    var tokens = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../../../../secure/tokens.json'), 'utf8'));
     //var tokens = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../../tokens.json'), 'utf8'));
     if (typeof tokens[this._currentSite] == 'undefined') {
         console.log("Error: [redcap_get_event] there is no token for the site \"" + this._currentSite + "\". Ignore the request.\n");
@@ -161,9 +163,11 @@ RedcapGetEvent.prototype.getAllData = function() {
     if (typeof this._cache[k] !== 'undefined') {
         // we have this value already set and be done with it
         this._callsData = this._cache[k];
-        this._startedCall = false; // do this once we use the data from the body
+        //this._startedCall = false; // do this once we use the data from the body
         //console.log("Found data for this participant: " + JSON.stringify(this._callsData));
         return;
+    } else {
+        //console.log("no data yet for this participant " + pGUID);
     }
 
     // we have to get data from REDCap first - we might not need the list of participant - lets get the data for everyone for this site
@@ -245,7 +249,7 @@ RedcapGetEvent.prototype.getAllData = function() {
                 }
             }
             self._startedCall = false; // do this once we use the data from the body
-            //console.log("got data back in callsData " + JSON.stringify(self._callsData));
+            //console.log("got data back in callsData " + JSON.stringify(self._callsData) + " size of cache is now: " + Object.keys(self._cache).length);
         };
     })(this, pGUID, event));
 }

@@ -813,7 +813,8 @@ function debForward() {
     }
 }
 
-function drawValues(node, values) {
+// anchor is 'start' or 'end'
+function drawValues(node, values, show_at) {
     var x = 0;
     var y = 0;
     
@@ -860,6 +861,8 @@ function drawValues(node, values) {
 		        x = x - 20;
 		        order = 'end';
 	        }
+            if (typeof show_at !== 'undefined' && order != show_at)
+                return;
 	        
 	        var t = jQuery(SVG('text'))
 		        .attr('font-size', '16px')
@@ -914,9 +917,9 @@ function debShowStep( ) {
     // for that nodes inputs draw the different values
     jQuery('#debugging').children().remove();
     if ( ! (Object.keys(inputs).length === 0) )
-	    drawValues(node, inputs);
+	    drawValues(node, inputs, 'end');
     if ( ! (Object.keys(outputs).length === 0) )
-	    drawValues(node, outputs);
+	    drawValues(node, outputs, 'start');
     
     // update the epoch and step numbers
     jQuery('#deb-epoch').val(entry['epoch']);

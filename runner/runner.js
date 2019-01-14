@@ -442,6 +442,14 @@ function work(node, recipe) {
             // no change
             done = done && true;
         } else {
+            /*
+              if (!isEquivalent(workers[gid]['inputs'], inputs))
+                console.log(node['name'] + " not equivalent on inputs " + JSON.stringify(workers[gid]['inputs']) + " " + JSON.stringify(inputs));
+              if (!isEquivalent(workers[gid]['outputs'], outputs))
+                console.log(node['name'] + " not equivalent on outputs " + JSON.stringify(workers[gid]['outputs']) + " " + JSON.stringify(outputs));
+              if (!isEquivalent(workers[gid]['state'], state))
+                console.log(node['name'] + " not equivalent on state");
+            */
             done = done && false;
         }
         workers[gid]['inputs']  = clone(inputs);
@@ -497,6 +505,7 @@ function run(recipe) {
         // we will call each node with the input for as long as they do something (compare new with old responses)
         var done = work(node, recipe);
         if (!done) {
+            //console.log("STILL SOMETHING CHANGED for node " + node['name']);
             somethingChanged = true;
         }
     }

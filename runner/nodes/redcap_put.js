@@ -71,7 +71,7 @@ function sendToREDCap(scores, pretendMode, gid) {
     // sent out
     // How to prevent too fast send operations? For now hope the program is slow enough...
 
-    var tokens = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../../../code/php/tokens.json'), 'utf8'));
+    var tokens = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../../../../secure/tokens.json'), 'utf8'));
     //var tokens = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../../tokens.json'), 'utf8'));
 
     var localScores = {}; // send by site and event to be able to use the normal tokens and limit error messages

@@ -3,6 +3,23 @@
 //
 
 var Rcode = function (env) {};
+var path = require('path');
+var fs = require('fs');
+
+// delete the directory to safe space
+Rcode.prototype.rimraf = function (dir_path) {
+    if (fs.existsSync(dir_path)) {
+        fs.readdirSync(dir_path).forEach(function(entry) {
+            var entry_path = path.join(dir_path, entry);
+            if (fs.lstatSync(entry_path).isDirectory()) {
+                rimraf(entry_path);
+            } else {
+                fs.unlinkSync(entry_path);
+            }
+        });
+        fs.rmdirSync(dir_path);
+    }
+};
 
 Rcode.prototype.work = function (inputs, outputs, state) {
 	var source = "";
@@ -61,6 +78,8 @@ Rcode.prototype.work = function (inputs, outputs, state) {
 	        }
             //console.log("Got back these values: " + JSON.stringify(outputs) + "\n");
         }
+        // and delete the directory again
+        this.rimraf(tmpDir);
     }
 };
 

@@ -355,14 +355,14 @@ echo(']; </script>');
    });
 
    jQuery('body').on('click', '.quit-icon', function() {
-       var recipe = jQuery(this).parent().parent().attr('recipe');
+       var recipe = jQuery(this).parent().attr('recipe');
        //window.open('viewer/index.php?load=' + recipe, '_viewer');
        jQuery.getJSON('getTiming.php', { 'action': "stop", 'measure': recipe }, function(data) {
            console.log("got back " + JSON.stringify(data));
        });
    });
    jQuery('body').on('touchend', '.quit-icon', function() {
-       var recipe = jQuery(this).parent().parent().attr('recipe');
+       var recipe = jQuery(this).parent().attr('recipe');
        //window.open('viewer/index.php?load=' + recipe, '_viewer');
        jQuery.getJSON('getTiming.php', { 'action': "stop", 'measure': recipe }, function(data) {
            console.log("got back " + JSON.stringify(data));

@@ -106,7 +106,7 @@ RedcapGet.prototype.work = function (inputs, outputs, state) {
 // can be applied to the pulled data (remove entries that cannot be  stored).
 RedcapGet.prototype.setupGetAllData = function () {
     // get the instrument event mappings, we also need to get the 
-    var tokens = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../../../code/php/tokens.json'), 'utf8'));
+    var tokens = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../../../../secure/tokens.json'), 'utf8'));
     //var tokens = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../../tokens.json'), 'utf8'));
     var site = "UCSD";
     var self = this;
