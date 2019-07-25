@@ -157,6 +157,18 @@ RedcapGetEvent.prototype.getAllData = function() {
     var site  = this._currentSite;
     var pGUID = this._currentPGUID;  // get from inputs
     var event = this._currentEvent;  // get from state
+
+    // prevent cases in which the event is not specified and therefore all values will be queried from REDCap
+    if (typeof event == 'undefined' || event == "") {
+        console.log("Error: [redcap_get_event] no event specified, refuse to run");
+        return;
+    }
+    
+    // prevent cases in which the pGUID is not specified and therefore all values will be queried from REDCap
+    if (typeof pGUID == 'undefined' || pGUID == "") {
+        console.log("Error: [redcap_get_event] no pGUID specified, refuse to run");
+        return;
+    }
     
     // maybe this value is already in the cache? In that case we are done here
     var k = pGUID + event;
