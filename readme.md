@@ -52,6 +52,33 @@ In order to remove an individual connection between two ports, right-click on th
 
 Save and load recipes from the select2 control on the top left of the page. Only Chrome browsers are currently able to create a screenshot of the recipe during the save operation. Both the recipe and its picture are stored in the recipes/ folder of the viewer sub-directory.
 
+### Designing recipes
+
+Every operation on the database is done in three steps. Reading variables from REDCap, processing the data and sending it back to other variables in REDCap. If these steps are executed at regular intervals they can fix ongoing issues or calculate derived scores.
+
+#### Reading data from REDCap
+
+There are two modules that read from REDCap. One is "REDCap Get" and the sister node "REDCap Get Huge", which has more space for variables but is otherwise doing the same operation. Drag and drop the module into the recipe viewer, highlight the node (name on top shows up as white text) and the status variables of the node are displayed on the left side of the viewer as "itemX".
+
+![REDCap Get node](https://github.com/ABCD-STUDY/auto-scoring/raw/master/images/REDCapGet.png)
+
+It is important that the session identifying variables are present. Usually these are added as the first three fields as "id_redcap", "redcap_event_name", and "redcap_data_access_group". 
+
+#### Writing data to REDCap
+
+The "REDCap Put" module (and "REDCap Put Huge") collect data from the data flow graph and "sink" them back into REDCap. In order to write any value in REDCap three fields that identify the participant, session and site are required ("id_redcap", "redcap_event_name", "redcap_data_access_group").
+
+![REDCap Put node](https://github.com/ABCD-STUDY/auto-scoring/raw/master/images/REDCapPut.png)
+
+Notice: The recipe can be run in a "pretend" mode. This will generate all the values in the log files but it will not overwrite any scores in REDCap.
+
+#### How to compute for a specific event only
+
+The "If-Else" module can be used to compare a field with a value. If the comparison works the "true" output of the If-Else module can be connected to the REDCap Put module's orange on/off connection. This special connection port in the upper left corner of each node can be used to disable the module given the current input. A disabled REDCap Put module does not store the currently connected values.
+
+In order to run the recipe for the baseline event only the If-Else can use the "redcap_event_name" value and compare it against the official name of the event "baseline_year_1_arm_1".
+
+
 ### Re-using existing recipes
 
 It might happen that a recipe applies to more than one set of input variables. Usually one can make a copy of the initial recipe (Save As...) and change the values to create the second instance of the recipe for the new set of input variables. This approach is not very practical if there are many copies that need to be created. What would be required is a recipe that can change another recipe replacing the existing set of items with new sets. This 'change of a recipe' recipe is called a meta-level-1 recipe. 
